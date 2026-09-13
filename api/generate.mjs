@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+\export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({
             error: "Method not allowed"
@@ -23,12 +23,12 @@ export default async function handler(req, res) {
 
         if (!apiKey) {
             return res.status(500).json({
-                error: "GEMINI_API_KEY is missing from Vercel."
+                error: "GEMINI_API_KEY is missing."
             });
         }
 
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1/interactions",
+            "https://generativelanguage.googleapis.com/v1beta/interactions",
             {
                 method: "POST",
 
@@ -38,18 +38,18 @@ export default async function handler(req, res) {
                 },
 
                 body: JSON.stringify({
-                    model: "gemini-3.6-flash",
+                    model: "gemini-3.7-flash",
 
-                    input: `
-You are DM-AI, an expert Dungeons & Dragons Dungeon Master assistant.
+                    system_instruction: `
+You are DM-AI, an expert Dungeons & Dragons
+Dungeon Master assistant.
 
-Turn the user's idea into a complete, creative and playable D&D campaign.
+Turn the user's idea into a complete,
+creative and playable D&D campaign.
 
-Create content that a Dungeon Master can actually use at the table.
+Make it easy for a Dungeon Master to use.
 
-Organize the campaign with clear headings.
-
-Include, when appropriate:
+Include appropriate sections such as:
 
 CAMPAIGN PREMISE
 MAIN STORY
@@ -65,14 +65,20 @@ PLOT TWISTS
 FINAL BOSS
 FUTURE ADVENTURE IDEAS
 
-Make everything cohesive, detailed, creative, and easy for a DM to run.
+Make everything cohesive, detailed,
+creative and fun.
 
-Adapt the campaign to exactly what the user requests.
+Adapt everything to the user's request.
+`,
 
-USER'S CAMPAIGN REQUEST:
+                    input: prompt,
 
-${prompt}
-`
+                    generation_config: {
+                        max_output_tokens: 6000,
+                        thinking_level: "low"
+                    },
+
+                    store: false
                 })
             }
         );
@@ -80,34 +86,33 @@ ${prompt}
         const data = await response.json();
 
         if (!response.ok) {
+            console.error("Gemini API error:", data);
+
             return res.status(response.status).json({
                 error:
                     data?.error?.message ||
-                    "Gemini request failed."
+                    "Gemini API request failed."
             });
         }
 
         const result =
-            data?.output_text ||
             data?.steps
                 ?.filter(step => step.type === "model_output")
                 ?.flatMap(step => step.content || [])
                 ?.filter(item => item.type === "text")
                 ?.map(item => item.text)
                 ?.join("") ||
-            "Gemini did not return a campaign.";
+            "DM-AI didn't receive a campaign response.";
 
         return res.status(200).json({
             result
         });
 
     } catch (error) {
-        console.error("DM-AI Gemini error:", error);
+        console.error("DM-AI error:", error);
 
         return res.status(500).json({
-            error:
-                error.message ||
-                "Something went wrong while generating the campaign."
+            error: error.message || "Something went wrong."
         });
     }
 }
