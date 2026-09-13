@@ -2,41 +2,188 @@ export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
       return res.status(405).json({
-        error: "POST required"
+        error: "Method not allowed"
       });
     }
 
     const { prompt } = req.body || {};
 
-    if (!prompt) {
+    if (!prompt || !prompt.trim()) {
       return res.status(400).json({
-        error: "Prompt is required"
+        error: "Please enter something for DM-AI to create."
       });
     }
 
-    // Your Vercel environment variable
-    const apiKey = process.env.OPEN_AI_KEY;
+    // =====================================================
+    // GEMINI API KEY
+    // =====================================================
+
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "OPEN_AI_KEY is missing from Vercel Environment Variables"
+        error: "GEMINI_API_KEY is not configured in Vercel."
       });
     }
 
+    // =====================================================
+    // DM-AI INSTRUCTIONS
+    // =====================================================
+
     const systemPrompt = `
-You are DM-AI, an advanced Dungeons & Dragons campaign generator.
+You are DM-AI, an expert Dungeons & Dragons Dungeon Master,
+campaign designer, storyteller, NPC creator, monster designer,
+quest designer, and adventure planner.
 
-The user will describe the kind of campaign they want.
+The user will tell you what kind of D&D adventure or campaign
+they want.
 
-You MUST return ONLY valid JSON.
+Your job is to create a complete, playable campaign.
 
-Do not use markdown.
-Do not use code fences.
-Do not add explanations outside the JSON.
+DO NOT ONLY WRITE A STORY.
 
-Create a complete playable D&D campaign.
+Create useful material that a real Dungeon Master can use at
+the table.
 
-The JSON MUST have this exact structure:
+Your response MUST be valid JSON.
+
+Return ONLY JSON.
+Do NOT use markdown.
+Do NOT use code blocks.
+Do NOT put any text before or after the JSON.
+
+Create the following:
+
+1. CAMPAIGN
+- title
+- description
+- setting
+- tone
+- recommendedLevel
+- mainStory
+
+2. LOCATIONS
+Create several important locations.
+Each should have:
+- name
+- description
+- secrets
+
+3. NPCS
+Create important NPCs.
+Each should have:
+- name
+- role
+- race
+- personality
+- appearance
+- motivation
+- secret
+- dialogue
+
+4. MONSTERS
+Create monsters appropriate for the campaign.
+Each should have:
+- name
+- description
+- difficulty
+- armorClass
+- hitPoints
+- attacks
+- abilities
+- tactics
+
+5. QUESTS
+Create main and side quests.
+Each should have:
+- name
+- type
+- description
+- objective
+- reward
+- consequences
+
+6. ENCOUNTERS
+Create several encounters.
+Each should have:
+- name
+- location
+- difficulty
+- description
+- enemies
+- objectives
+- dmNotes
+
+7. ITEMS
+Create useful treasure and magic items.
+Each should have:
+- name
+- type
+- rarity
+- description
+- effect
+
+8. PLAYER CHARACTERS
+Create example characters that fit the campaign.
+Each should have:
+- name
+- race
+- class
+- background
+- personality
+- motivation
+- backstory
+- abilityScores
+- equipment
+
+abilityScores must contain:
+- strength
+- dexterity
+- constitution
+- intelligence
+- wisdom
+- charisma
+
+9. CHAPTERS
+Break the campaign into multiple chapters.
+Each should have:
+- number
+- title
+- summary
+- objectives
+- events
+- encounters
+- dmNotes
+
+10. FINAL BOSS
+Create an epic final boss.
+Include:
+- name
+- description
+- difficulty
+- armorClass
+- hitPoints
+- attacks
+- abilities
+- phases
+- tactics
+
+11. DM NOTES
+Give practical advice for running the campaign.
+
+Make everything connected.
+
+NPCs should matter to the story.
+Locations should connect to quests.
+Quests should lead to encounters.
+Monsters should fit the locations.
+Items should have a reason to exist.
+The final boss should connect to the main story.
+
+If the user requests a small adventure, keep it smaller.
+If the user requests a huge campaign, make it much larger.
+
+JSON FORMAT:
 
 {
   "title": "",
@@ -44,113 +191,44 @@ The JSON MUST have this exact structure:
   "setting": "",
   "tone": "",
   "recommendedLevel": "",
-  "story": {
-    "mainPlot": "",
-    "act1": "",
-    "act2": "",
-    "act3": "",
-    "ending": ""
-  },
-  "locations": [
-    {
-      "name": "",
-      "description": "",
-      "secrets": []
-    }
-  ],
-  "npcs": [
-    {
-      "name": "",
-      "role": "",
-      "description": "",
-      "personality": "",
-      "motivation": "",
-      "secret": "",
-      "stats": {
-        "armorClass": 10,
-        "hitPoints": 10,
-        "speed": "30 ft",
-        "attacks": [],
-        "abilities": []
-      }
-    }
-  ],
-  "monsters": [
-    {
-      "name": "",
-      "description": "",
-      "armorClass": 10,
-      "hitPoints": 10,
-      "speed": "30 ft",
-      "attacks": [],
-      "abilities": []
-    }
-  ],
-  "encounters": [
-    {
-      "name": "",
-      "location": "",
-      "difficulty": "",
-      "description": "",
-      "enemies": [],
-      "objectives": []
-    }
-  ],
-  "quests": [
-    {
-      "name": "",
-      "description": "",
-      "objective": "",
-      "reward": ""
-    }
-  ],
-  "items": [
-    {
-      "name": "",
-      "type": "",
-      "description": "",
-      "effect": ""
-    }
-  ],
-  "boss": {
-    "name": "",
-    "description": "",
-    "armorClass": 10,
-    "hitPoints": 100,
-    "attacks": [],
-    "abilities": [],
-    "phases": []
-  },
-  "playerCharacters": [
-    {
-      "name": "",
-      "class": "",
-      "race": "",
-      "background": "",
-      "personality": "",
-      "motivation": ""
-    }
-  ]
+  "mainStory": "",
+
+  "locations": [],
+
+  "npcs": [],
+
+  "monsters": [],
+
+  "quests": [],
+
+  "encounters": [],
+
+  "items": [],
+
+  "playerCharacters": [],
+
+  "chapters": [],
+
+  "finalBoss": {},
+
+  "dmNotes": []
 }
-
-Generate enough content to make the campaign actually playable.
-
-If the user asks for a horror campaign, make it scary.
-If they ask for fantasy, make it epic.
-If they ask for comedy, make it funny.
-If they ask for a specific theme, follow it.
-
-Do not invent fields outside the structure above.
 `;
 
+    // =====================================================
+    // GEMINI REQUEST
+    // =====================================================
+
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
       {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey
         },
+
         body: JSON.stringify({
           systemInstruction: {
             parts: [
@@ -163,66 +241,111 @@ Do not invent fields outside the structure above.
           contents: [
             {
               role: "user",
+
               parts: [
                 {
-                  text: prompt
+                  text: prompt.trim()
                 }
               ]
             }
           ],
 
           generationConfig: {
+            temperature: 0.8,
             responseMimeType: "application/json"
           }
         })
       }
     );
 
+    // =====================================================
+    // READ GEMINI RESPONSE
+    // =====================================================
+
     const data = await response.json();
 
-    console.log("Gemini status:", response.status);
-    console.log("Gemini response:", JSON.stringify(data));
+    console.log(
+      "Gemini status:",
+      response.status
+    );
 
     if (!response.ok) {
+      console.error(
+        "Gemini error:",
+        JSON.stringify(data)
+      );
+
       return res.status(500).json({
         error:
           data?.error?.message ||
-          "Gemini API request failed"
+          "Gemini API request failed."
       });
     }
 
     const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      data?.candidates?.[0]?.content?.parts
+        ?.map(part => part.text || "")
+        .join("")
+        .trim();
 
     if (!text) {
+      console.error(
+        "Gemini returned no text:",
+        JSON.stringify(data)
+      );
+
       return res.status(500).json({
-        error: "Gemini returned an empty response"
+        error:
+          "Gemini returned an empty response."
       });
     }
+
+    // =====================================================
+    // PARSE JSON
+    // =====================================================
 
     let campaign;
 
     try {
       campaign = JSON.parse(text);
-    } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.error("Gemini text:", text);
+    } catch (error) {
+
+      console.error(
+        "JSON parsing failed:",
+        error
+      );
+
+      console.error(
+        "Gemini returned:",
+        text
+      );
 
       return res.status(500).json({
-        error: "Gemini returned invalid campaign JSON"
+        error:
+          "Gemini returned invalid campaign data."
       });
     }
 
+    // =====================================================
+    // SEND CAMPAIGN TO FRONTEND
+    // =====================================================
+
     return res.status(200).json({
       success: true,
-      campaign
+      campaign: campaign
     });
 
   } catch (error) {
-    console.error("DM-AI error:", error);
+
+    console.error(
+      "DM-AI server error:",
+      error
+    );
 
     return res.status(500).json({
-      error: error.message || "Something went wrong"
+      error:
+        error?.message ||
+        "Something went wrong."
     });
   }
 }
