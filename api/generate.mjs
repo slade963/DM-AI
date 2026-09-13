@@ -6,16 +6,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const body =
-      typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : req.body || {};
+    const { prompt } = req.body || {};
 
-    const prompt = body.prompt;
-
-    if (!prompt || !prompt.trim()) {
+    if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({
-        error: "Please enter a campaign idea."
+        error: "A campaign description is required."
       });
     }
 
@@ -27,260 +22,439 @@ export default async function handler(req, res) {
       });
     }
 
+    const schema = {
+      type: "OBJECT",
+      properties: {
+        title: {
+          type: "STRING"
+        },
+
+        tagline: {
+          type: "STRING"
+        },
+
+        setting: {
+          type: "STRING"
+        },
+
+        tone: {
+          type: "STRING"
+        },
+
+        difficulty: {
+          type: "STRING"
+        },
+
+        recommended_level: {
+          type: "STRING"
+        },
+
+        campaign_summary: {
+          type: "STRING"
+        },
+
+        main_plot: {
+          type: "STRING"
+        },
+
+        dm_intro: {
+          type: "STRING"
+        },
+
+        player_hook: {
+          type: "STRING"
+        },
+
+        locations: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              description: { type: "STRING" },
+              important_npcs: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              secrets: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              }
+            },
+            required: [
+              "name",
+              "description",
+              "important_npcs",
+              "secrets"
+            ]
+          }
+        },
+
+        npcs: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              race: { type: "STRING" },
+              role: { type: "STRING" },
+              personality: { type: "STRING" },
+              appearance: { type: "STRING" },
+              motivation: { type: "STRING" },
+              secret: { type: "STRING" },
+              dialogue: { type: "STRING" }
+            },
+            required: [
+              "name",
+              "race",
+              "role",
+              "personality",
+              "appearance",
+              "motivation",
+              "secret",
+              "dialogue"
+            ]
+          }
+        },
+
+        monsters: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              type: { type: "STRING" },
+              role: { type: "STRING" },
+              description: { type: "STRING" },
+              abilities: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              tactics: { type: "STRING" },
+              suggested_cr: { type: "STRING" }
+            },
+            required: [
+              "name",
+              "type",
+              "role",
+              "description",
+              "abilities",
+              "tactics",
+              "suggested_cr"
+            ]
+          }
+        },
+
+        quests: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              type: { type: "STRING" },
+              description: { type: "STRING" },
+              objective: { type: "STRING" },
+              reward: { type: "STRING" },
+              consequences: { type: "STRING" }
+            },
+            required: [
+              "name",
+              "type",
+              "description",
+              "objective",
+              "reward",
+              "consequences"
+            ]
+          }
+        },
+
+        encounters: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              location: { type: "STRING" },
+              description: { type: "STRING" },
+              enemies: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              environment: { type: "STRING" },
+              tactics: { type: "STRING" },
+              difficulty: { type: "STRING" },
+              dm_notes: { type: "STRING" }
+            },
+            required: [
+              "name",
+              "location",
+              "description",
+              "enemies",
+              "environment",
+              "tactics",
+              "difficulty",
+              "dm_notes"
+            ]
+          }
+        },
+
+        items: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              rarity: { type: "STRING" },
+              type: { type: "STRING" },
+              description: { type: "STRING" },
+              ability: { type: "STRING" },
+              location_found: { type: "STRING" }
+            },
+            required: [
+              "name",
+              "rarity",
+              "type",
+              "description",
+              "ability",
+              "location_found"
+            ]
+          }
+        },
+
+        player_character_templates: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              race: { type: "STRING" },
+              class: { type: "STRING" },
+              background: { type: "STRING" },
+              personality: { type: "STRING" },
+              backstory: { type: "STRING" },
+              motivation: { type: "STRING" },
+              ability_scores: {
+                type: "OBJECT",
+                properties: {
+                  strength: { type: "INTEGER" },
+                  dexterity: { type: "INTEGER" },
+                  constitution: { type: "INTEGER" },
+                  intelligence: { type: "INTEGER" },
+                  wisdom: { type: "INTEGER" },
+                  charisma: { type: "INTEGER" }
+                },
+                required: [
+                  "strength",
+                  "dexterity",
+                  "constitution",
+                  "intelligence",
+                  "wisdom",
+                  "charisma"
+                ]
+              },
+              starting_equipment: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              }
+            },
+            required: [
+              "name",
+              "race",
+              "class",
+              "background",
+              "personality",
+              "backstory",
+              "motivation",
+              "ability_scores",
+              "starting_equipment"
+            ]
+          }
+        },
+
+        chapters: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              chapter_number: { type: "INTEGER" },
+              title: { type: "STRING" },
+              summary: { type: "STRING" },
+              objectives: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              important_events: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              encounters: {
+                type: "ARRAY",
+                items: { type: "STRING" }
+              },
+              dm_guidance: { type: "STRING" }
+            },
+            required: [
+              "chapter_number",
+              "title",
+              "summary",
+              "objectives",
+              "important_events",
+              "encounters",
+              "dm_guidance"
+            ]
+          }
+        },
+
+        final_boss: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING" },
+            description: { type: "STRING" },
+            motivation: { type: "STRING" },
+            abilities: {
+              type: "ARRAY",
+              items: { type: "STRING" }
+            },
+            phases: {
+              type: "ARRAY",
+              items: { type: "STRING" }
+            },
+            tactics: { type: "STRING" },
+            arena: { type: "STRING" },
+            suggested_cr: { type: "STRING" }
+          },
+          required: [
+            "name",
+            "description",
+            "motivation",
+            "abilities",
+            "phases",
+            "tactics",
+            "arena",
+            "suggested_cr"
+          ]
+        },
+
+        random_encounters: {
+          type: "ARRAY",
+          items: { type: "STRING" }
+        },
+
+        dm_tips: {
+          type: "ARRAY",
+          items: { type: "STRING" }
+        },
+
+        opening_scene: {
+          type: "STRING"
+        }
+      },
+
+      required: [
+        "title",
+        "tagline",
+        "setting",
+        "tone",
+        "difficulty",
+        "recommended_level",
+        "campaign_summary",
+        "main_plot",
+        "dm_intro",
+        "player_hook",
+        "locations",
+        "npcs",
+        "monsters",
+        "quests",
+        "encounters",
+        "items",
+        "player_character_templates",
+        "chapters",
+        "final_boss",
+        "random_encounters",
+        "dm_tips",
+        "opening_scene"
+      ]
+    };
+
     const systemPrompt = `
-You are DM-AI, a professional Dungeons & Dragons campaign creation engine.
+You are DM-AI, an expert Dungeons & Dragons campaign designer.
 
-The user will give you an idea for a D&D campaign.
+The user will describe the campaign they want.
 
-DO NOT ONLY WRITE A STORY.
+Your job is to create a COMPLETE campaign package for a Dungeon Master.
 
-You must create an entire playable campaign package.
+Do NOT only write a story.
 
-Return the campaign as JSON ONLY.
+Create usable D&D material including:
+- campaign premise
+- setting
+- locations
+- NPCs
+- monsters
+- quests
+- encounters
+- treasure and magic items
+- player character templates
+- chapters
+- final boss
+- random encounters
+- DM advice
+- opening scene
 
-Do not use markdown.
-Do not use code fences.
-Do not write anything before or after the JSON.
+Make everything connected to the user's idea.
 
-Use exactly this structure:
+The campaign should feel like a real playable D&D campaign.
 
-{
-  "campaign": {
-    "title": "",
-    "overview": "",
-    "setting": "",
-    "tone": "",
-    "recommendedLevel": "",
-    "mainStory": "",
-    "openingHook": ""
-  },
+Create enough detail that a DM could actually sit down and run the adventure.
 
-  "chapters": [
-    {
-      "number": 1,
-      "title": "",
-      "summary": "",
-      "objectives": [],
-      "events": []
-    }
-  ],
+Player character templates should be useful pre-generated characters that fit the campaign.
 
-  "mainQuests": [
-    {
-      "name": "",
-      "description": "",
-      "objectives": [],
-      "rewards": []
-    }
-  ],
+Monster abilities should be practical and understandable.
 
-  "sideQuests": [
-    {
-      "name": "",
-      "description": "",
-      "objectives": [],
-      "rewards": []
-    }
-  ],
+NPCs should have motivations, secrets and dialogue.
 
-  "npcs": [
-    {
-      "name": "",
-      "race": "",
-      "role": "",
-      "appearance": "",
-      "personality": "",
-      "motivation": "",
-      "secret": "",
-      "relationshipToPlayers": "",
-      "dialogue": ""
-    }
-  ],
+Encounters should explain what the DM should actually do.
 
-  "playerCharacters": [
-    {
-      "name": "",
-      "race": "",
-      "class": "",
-      "level": 1,
-      "background": "",
-      "alignment": "",
-      "strength": 10,
-      "dexterity": 10,
-      "constitution": 10,
-      "intelligence": 10,
-      "wisdom": 10,
-      "charisma": 10,
-      "hitPoints": 10,
-      "armorClass": 10,
-      "speed": 30,
-      "skills": [],
-      "savingThrows": [],
-      "weapons": [],
-      "spells": [],
-      "equipment": [],
-      "features": [],
-      "backstory": ""
-    }
-  ],
+The final boss should be memorable and have multiple phases.
 
-  "locations": [
-    {
-      "name": "",
-      "type": "",
-      "description": "",
-      "importantDetails": [],
-      "secrets": [],
-      "encounters": []
-    }
-  ],
+IMPORTANT:
+Return ONLY the requested structured JSON data.
+Do not use Markdown.
+Do not wrap the JSON in code fences.
+Do not include commentary outside the JSON.
+`;
 
-  "monsters": [
-    {
-      "name": "",
-      "type": "",
-      "size": "",
-      "challengeRating": "",
-      "description": "",
-      "armorClass": 10,
-      "hitPoints": 10,
-      "speed": "",
-      "abilities": [],
-      "attacks": [],
-      "specialAbilities": [],
-      "tactics": []
-    }
-  ],
+    const userPrompt = `
+Create a complete D&D campaign based on this request:
 
-  "encounters": [
-    {
-      "name": "",
-      "location": "",
-      "difficulty": "",
-      "description": "",
-      "enemies": [],
-      "environment": "",
-      "objectives": [],
-      "rewards": []
-    }
-  ],
+"${prompt}"
 
-  "loot": [
-    {
-      "name": "",
-      "type": "",
-      "description": "",
-      "value": "",
-      "specialEffect": ""
-    }
-  ],
-
-  "factions": [
-    {
-      "name": "",
-      "description": "",
-      "goals": "",
-      "members": [],
-      "relationshipToPlayers": ""
-    }
-  ],
-
-  "lore": [
-    {
-      "topic": "",
-      "information": ""
-    }
-  ],
-
-  "finalBoss": {
-    "name": "",
-    "description": "",
-    "motivation": "",
-    "location": "",
-    "armorClass": 10,
-    "hitPoints": 100,
-    "abilities": [],
-    "attacks": [],
-    "phases": [],
-    "weaknesses": [],
-    "rewards": []
-  },
-
-  "dmNotes": [
-    ""
-  ]
-}
-
-IMPORTANT RULES:
-
-1. Generate a COMPLETE campaign, not just a summary.
-
-2. Create multiple quests, NPCs, locations, monsters and encounters.
-
-3. Make the NPCs relevant to the story.
-
-4. Make locations connect to quests and NPCs.
-
-5. Make monsters appropriate for the recommended level.
-
-6. Make encounters use the monsters and locations.
-
-7. Make the final boss connected to the main story.
-
-8. Make rewards appropriate for the campaign.
-
-9. Create enough content that a DM could actually run multiple sessions.
-
-10. If the user asks for a specific number of NPCs, quests, characters, locations, monsters, etc., follow their requested number.
-
-11. If they do not specify numbers, create:
-   - 5 main quests
-   - 5 side quests
-   - 8 NPCs
-   - 5 locations
-   - 8 monsters
-   - 6 encounters
-   - 8 loot items
-   - 3 factions
-   - 5 lore entries
-   - 4 chapters
-
-12. Player characters should only be generated when the user asks for them or asks for a party.
-
-13. Keep the campaign internally consistent.
-
-14. Make everything usable by a Dungeon Master.
-
-USER REQUEST:
-${prompt}
+Make the campaign creative, coherent, playable and detailed.
 `;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
+        encodeURIComponent(apiKey),
       {
         method: "POST",
-
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
+          "Content-Type": "application/json"
         },
-
         body: JSON.stringify({
           contents: [
             {
-              role: "user",
               parts: [
                 {
-                  text: systemPrompt
+                  text: systemPrompt + "\n\n" + userPrompt
                 }
               ]
             }
           ],
 
           generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 20000,
-            responseMimeType: "application/json"
+            response_mime_type: "application/json",
+            response_schema: schema,
+            max_output_tokens: 30000
           }
         })
       }
@@ -289,7 +463,7 @@ ${prompt}
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Gemini error:", data);
+      console.error("Gemini API error:", data);
 
       return res.status(response.status).json({
         error:
@@ -298,13 +472,15 @@ ${prompt}
       });
     }
 
-    const result =
+    const text =
       data?.candidates?.[0]?.content?.parts
         ?.map(part => part.text || "")
         .join("")
         .trim();
 
-    if (!result) {
+    if (!text) {
+      console.error("Gemini returned no text:", data);
+
       return res.status(500).json({
         error: "Gemini returned an empty response."
       });
@@ -313,27 +489,27 @@ ${prompt}
     let campaign;
 
     try {
-      campaign = JSON.parse(result);
+      campaign = JSON.parse(text);
     } catch (parseError) {
-      console.error("JSON parse error:", parseError);
-      console.error("Gemini result:", result);
+      console.error("Invalid Gemini JSON:", text);
 
       return res.status(500).json({
-        error: "Gemini generated invalid campaign data."
+        error: "Gemini generated invalid campaign data.",
+        details: parseError.message
       });
     }
 
     return res.status(200).json({
-      result: campaign
+      success: true,
+      campaign
     });
 
   } catch (error) {
-    console.error("DM-AI error:", error);
+    console.error("Server error:", error);
 
     return res.status(500).json({
-      error:
-        error?.message ||
-        "Something went wrong while creating your campaign."
+      error: "Failed to generate campaign.",
+      details: error.message
     });
   }
 }
