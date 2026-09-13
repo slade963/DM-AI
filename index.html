@@ -1,606 +1,987 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>DM-AI</title>
+<title>DM-AI</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0d0d0f;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================================================
+   FANTASY BACKGROUND
+========================================================= */
+
+.fantasy-background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.fantasy-emoji {
+    position: absolute;
+    font-size: 52px;
+    opacity: 0.065;
+    animation: float 12s infinite ease-in-out;
+}
+
+.emoji1 { top: 10%; left: 25%; }
+.emoji2 { top: 25%; right: 8%; animation-delay: 2s; }
+.emoji3 { bottom: 15%; left: 20%; animation-delay: 4s; }
+.emoji4 { bottom: 25%; right: 20%; animation-delay: 1s; }
+.emoji5 { top: 55%; left: 5%; animation-delay: 3s; }
+.emoji6 { top: 8%; right: 30%; animation-delay: 5s; }
+.emoji7 { bottom: 5%; right: 5%; animation-delay: 6s; }
+.emoji8 { top: 40%; right: 40%; animation-delay: 2s; }
+.emoji9 { top: 75%; left: 45%; animation-delay: 7s; }
+.emoji10 { top: 15%; left: 5%; animation-delay: 4s; }
+
+@keyframes float {
+
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
     }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #f5f0e6;
-
-      background:
-        radial-gradient(circle at top, rgba(80, 60, 110, 0.35), transparent 45%),
-        linear-gradient(135deg, #09070d, #15101d 50%, #09070d);
-
-      overflow-x: hidden;
+    50% {
+        transform: translateY(-20px) rotate(5deg);
     }
 
-    /* =========================
-       FLOATING EMOJIS
-    ========================= */
+}
 
-    .emoji {
-      position: fixed;
-      opacity: 0.10;
-      pointer-events: none;
-      z-index: 0;
-      user-select: none;
-      filter: grayscale(30%);
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    height: 100vh;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+    width: 270px;
+    background: rgba(20,20,22,.97);
+    border-right: 1px solid #29292d;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    padding: 22px;
+    border-bottom: 1px solid #29292d;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+.new-campaign {
+    width: 100%;
+    background: white;
+    color: #111;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.new-campaign:hover {
+    background: #ddd;
+}
+
+.history-title {
+    padding: 18px 20px 10px;
+    font-size: 12px;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px 10px;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+
+.chat-item:hover {
+    background: #222226;
+}
+
+.chat-item.active {
+    background: #29292e;
+}
+
+.chat-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    flex: 1;
+}
+
+.delete-chat {
+    background: none;
+    border: none;
+    color: #777;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.chat-item:hover .delete-chat {
+    opacity: 1;
+}
+
+.delete-chat:hover {
+    color: #ff5c5c;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.topbar {
+    height: 65px;
+    border-bottom: 1px solid #29292d;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    background: rgba(13,13,15,.9);
+    flex-shrink: 0;
+}
+
+.mobile-menu {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+.campaign-title {
+    font-size: 16px;
+    color: #ddd;
+    font-weight: 600;
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 20px;
+    scroll-behavior: smooth;
+}
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+    max-width: 850px;
+    margin: auto;
+    text-align: center;
+    padding-top: 7vh;
+}
+
+.welcome-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.welcome h1 {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.welcome p {
+    color: #8c8c91;
+    font-size: 17px;
+    margin-bottom: 35px;
+}
+
+/* =========================================================
+   FOUR CHOICES
+========================================================= */
+
+.examples {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.example {
+    background: rgba(23,23,25,.9);
+    border: 1px solid #29292d;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.example:hover {
+    background: #202024;
+    transform: translateY(-2px);
+    border-color: #45454c;
+}
+
+.example-title {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.example-text {
+    color: #85858a;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.message {
+    max-width: 1000px;
+    margin: 0 auto 28px;
+}
+
+.message-label {
+    font-size: 11px;
+    color: #777;
+    margin-bottom: 7px;
+    font-weight: bold;
+    letter-spacing: .5px;
+}
+
+.message-user {
+    background: #222226;
+    border-radius: 14px;
+    padding: 15px 18px;
+    margin-left: auto;
+    max-width: 75%;
+    line-height: 1.55;
+    white-space: pre-wrap;
+}
+
+.message-ai {
+    padding: 10px 5px;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   CAMPAIGN DISPLAY
+========================================================= */
+
+.campaign-result {
+    width: 100%;
+}
+
+.campaign-header {
+    background: linear-gradient(135deg,#19191d,#242429);
+    border: 1px solid #343438;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+}
+
+.campaign-header h1 {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.campaign-header p {
+    color: #ccc;
+    line-height: 1.65;
+}
+
+.campaign-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.meta-pill {
+    background: #2a2a30;
+    border: 1px solid #3a3a42;
+    border-radius: 20px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: #ccc;
+}
+
+.section {
+    background: rgba(20,20,23,.94);
+    border: 1px solid #29292e;
+    border-radius: 15px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.section-title {
+    padding: 17px 20px;
+    border-bottom: 1px solid #29292e;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.section-body {
+    padding: 20px;
+}
+
+.section-body > p {
+    color: #ccc;
+    line-height: 1.7;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 14px;
+}
+
+.content-card {
+    background: #18181b;
+    border: 1px solid #2d2d32;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.content-card h3 {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.content-card h4 {
+    margin-top: 12px;
+    margin-bottom: 5px;
+    color: #bbb;
+    font-size: 13px;
+}
+
+.content-card p {
+    color: #ccc;
+    line-height: 1.55;
+    font-size: 14px;
+}
+
+.content-card ul {
+    padding-left: 20px;
+    color: #ccc;
+}
+
+.content-card li {
+    margin: 5px 0;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.stat {
+    background: #222226;
+    border-radius: 9px;
+    padding: 10px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    color: #777;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    display: block;
+    margin-top: 3px;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.chapter {
+    border-left: 3px solid #777;
+}
+
+.chapter-number {
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.boss {
+    border: 1px solid #633;
+    background: linear-gradient(135deg,#211416,#18181b);
+}
+
+.loading {
+    color: #999;
+    font-style: italic;
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.input-section {
+    padding: 20px;
+    background: linear-gradient(transparent,#0d0d0f 25%);
+    flex-shrink: 0;
+}
+
+.input-container {
+    max-width: 850px;
+    margin: auto;
+    background: #1a1a1d;
+    border: 1px solid #343438;
+    border-radius: 16px;
+    padding: 12px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 70px;
+    max-height: 180px;
+    resize: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 15px;
+    padding: 5px;
+    font-family: inherit;
+}
+
+textarea::placeholder {
+    color: #6f6f74;
+}
+
+.input-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.hint {
+    color: #666;
+    font-size: 12px;
+}
+
+.generate {
+    border: none;
+    background: white;
+    color: #111;
+    border-radius: 10px;
+    padding: 10px 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.generate:hover {
+    background: #ddd;
+}
+
+.generate:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px) {
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 10;
+        transform: translateX(-100%);
+        transition: .3s;
     }
 
-    .e1 { top: 8%; left: 4%; font-size: 80px; transform: rotate(-18deg); }
-    .e2 { top: 22%; right: 5%; font-size: 90px; transform: rotate(20deg); }
-    .e3 { top: 48%; left: 2%; font-size: 75px; transform: rotate(12deg); }
-    .e4 { top: 65%; right: 3%; font-size: 85px; transform: rotate(-15deg); }
-    .e5 { bottom: 5%; left: 8%; font-size: 70px; transform: rotate(15deg); }
-    .e6 { bottom: 12%; right: 10%; font-size: 75px; transform: rotate(-20deg); }
-
-    /* =========================
-       MAIN APP
-    ========================= */
-
-    .app {
-      position: relative;
-      z-index: 1;
-      width: min(1100px, 94%);
-      margin: auto;
-      padding: 45px 0 80px;
+    .sidebar.open {
+        transform: translateX(0);
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 35px;
+    .mobile-menu {
+        display: block;
     }
 
-    .logo {
-      font-size: 52px;
-      font-weight: 900;
-      letter-spacing: 2px;
-
-      background: linear-gradient(
-        90deg,
-        #ffffff,
-        #c9a7ff,
-        #ffffff
-      );
-
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-
-      text-shadow: 0 0 35px rgba(180, 130, 255, 0.25);
+    .welcome h1 {
+        font-size: 32px;
     }
 
-    .subtitle {
-      color: #aaa2b5;
-      font-size: 17px;
-      margin-top: 8px;
+    .examples {
+        grid-template-columns: 1fr;
     }
 
-    /* =========================
-       BUILDER
-    ========================= */
-
-    .builder {
-      background: rgba(18, 14, 25, 0.88);
-      border: 1px solid rgba(190, 160, 255, 0.20);
-      border-radius: 22px;
-      padding: 28px;
-
-      box-shadow:
-        0 20px 70px rgba(0, 0, 0, 0.45),
-        inset 0 0 40px rgba(150, 100, 255, 0.03);
-
-      backdrop-filter: blur(12px);
+    .card-grid {
+        grid-template-columns: 1fr;
     }
 
-    .builder h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      font-size: 25px;
+    .stat-grid {
+        grid-template-columns: repeat(2,1fr);
     }
 
-    .builder p {
-      color: #aaa2b5;
-      margin-top: 0;
+    .message-user {
+        max-width: 90%;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 140px;
-      resize: vertical;
-
-      background: #0b0910;
-      border: 1px solid #342b42;
-      border-radius: 15px;
-
-      color: white;
-      padding: 18px;
-
-      font-size: 16px;
-      line-height: 1.5;
-
-      outline: none;
-      transition: 0.2s;
+    .hint {
+        display: none;
     }
 
-    textarea:focus {
-      border-color: #9b6cff;
-      box-shadow: 0 0 0 3px rgba(155, 108, 255, 0.10);
-    }
+}
 
-    .generate {
-      width: 100%;
-      margin-top: 15px;
-      padding: 16px;
-
-      border: 0;
-      border-radius: 14px;
-
-      background: linear-gradient(
-        135deg,
-        #7547d9,
-        #a56cff
-      );
-
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .generate:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(140, 90, 255, 0.30);
-    }
-
-    .generate:disabled {
-      opacity: 0.65;
-      cursor: wait;
-      transform: none;
-    }
-
-    /* =========================
-       STATUS
-    ========================= */
-
-    #status {
-      display: none;
-      text-align: center;
-      margin: 25px 0;
-      color: #c7b5e8;
-    }
-
-    .loader {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-
-      border: 3px solid rgba(255,255,255,0.2);
-      border-top-color: #a56cff;
-
-      border-radius: 50%;
-
-      animation: spin 0.8s linear infinite;
-
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* =========================
-       ERROR
-    ========================= */
-
-    #error {
-      display: none;
-
-      background: rgba(100, 20, 30, 0.25);
-      border: 1px solid rgba(255, 80, 100, 0.35);
-
-      color: #ffb4bd;
-
-      padding: 15px;
-      border-radius: 12px;
-
-      margin-top: 20px;
-    }
-
-    /* =========================
-       RESULTS
-    ========================= */
-
-    #results {
-      display: none;
-      margin-top: 35px;
-    }
-
-    .campaign-header {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(105, 65, 170, 0.30),
-          rgba(30, 20, 45, 0.90)
-        );
-
-      border: 1px solid rgba(180, 140, 255, 0.25);
-      border-radius: 22px;
-
-      padding: 32px;
-      margin-bottom: 20px;
-    }
-
-    .campaign-title {
-      font-size: 38px;
-      margin: 0 0 10px;
-    }
-
-    .campaign-description {
-      color: #c5becd;
-      line-height: 1.7;
-      white-space: pre-wrap;
-    }
-
-    .tags {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .tag {
-      padding: 7px 12px;
-      border-radius: 50px;
-
-      background: rgba(165, 108, 255, 0.12);
-      border: 1px solid rgba(165, 108, 255, 0.25);
-
-      color: #d8c7ff;
-      font-size: 13px;
-    }
-
-    /* =========================
-       SECTIONS
-    ========================= */
-
-    .section {
-      margin-top: 20px;
-
-      background: rgba(18, 14, 25, 0.90);
-
-      border: 1px solid rgba(255,255,255,0.08);
-
-      border-radius: 20px;
-      padding: 25px;
-    }
-
-    .section-title {
-      font-size: 25px;
-      margin: 0 0 18px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .story {
-      color: #d1cad7;
-      line-height: 1.8;
-      white-space: pre-wrap;
-    }
-
-    /* =========================
-       CARDS
-    ========================= */
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-    }
-
-    .card {
-      background: rgba(8, 7, 12, 0.75);
-      border: 1px solid rgba(255,255,255,0.08);
-
-      border-radius: 15px;
-      padding: 18px;
-
-      transition: 0.2s;
-    }
-
-    .card:hover {
-      border-color: rgba(165, 108, 255, 0.30);
-      transform: translateY(-2px);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      margin-bottom: 10px;
-      color: #e7dbff;
-    }
-
-    .card p {
-      color: #b8b0bd;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    .label {
-      color: #9270d4;
-      font-weight: bold;
-      font-size: 13px;
-      text-transform: uppercase;
-      margin-top: 12px;
-      margin-bottom: 4px;
-    }
-
-    ul {
-      padding-left: 20px;
-      color: #c2bbc7;
-      line-height: 1.7;
-    }
-
-    /* =========================
-       STAT BLOCK
-    ========================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 7px;
-      margin-top: 12px;
-    }
-
-    .stat {
-      background: #100d15;
-      border-radius: 8px;
-      padding: 9px;
-      text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      color: #e5d9f5;
-      font-size: 17px;
-    }
-
-    .stat span {
-      font-size: 10px;
-      color: #817888;
-      text-transform: uppercase;
-    }
-
-    /* =========================
-       BOSS
-    ========================= */
-
-    .boss {
-      border: 1px solid rgba(255, 80, 80, 0.25);
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(80, 15, 20, 0.35),
-          rgba(15, 10, 15, 0.90)
-        );
-    }
-
-    .boss h3 {
-      color: #ffb0b0;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 600px) {
-      .app {
-        padding-top: 25px;
-      }
-
-      .logo {
-        font-size: 38px;
-      }
-
-      .campaign-title {
-        font-size: 28px;
-      }
-
-      .builder,
-      .section,
-      .campaign-header {
-        padding: 20px;
-      }
-
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
-  <!-- FANTASY BACKGROUND -->
+<!-- =====================================================
+     FANTASY BACKGROUND
+===================================================== -->
 
-  <div class="emoji e1">⚔️</div>
-  <div class="emoji e2">🛡️</div>
-  <div class="emoji e3">♞</div>
-  <div class="emoji e4">⚔️</div>
-  <div class="emoji e5">🛡️</div>
-  <div class="emoji e6">♟️</div>
+<div class="fantasy-background">
 
-  <main class="app">
+    <div class="fantasy-emoji emoji1">⚔️</div>
+    <div class="fantasy-emoji emoji2">🛡️</div>
+    <div class="fantasy-emoji emoji3">🧙</div>
+    <div class="fantasy-emoji emoji4">🏰</div>
+    <div class="fantasy-emoji emoji5">🗡️</div>
+    <div class="fantasy-emoji emoji6">🐉</div>
+    <div class="fantasy-emoji emoji7">⚔️</div>
+    <div class="fantasy-emoji emoji8">🛡️</div>
+    <div class="fantasy-emoji emoji9">🐲</div>
+    <div class="fantasy-emoji emoji10">🧝</div>
 
-    <header>
-      <div class="logo">⚔️ DM-AI 🛡️</div>
+</div>
 
-      <div class="subtitle">
-        Your AI-powered Dungeon Master
-      </div>
-    </header>
 
-    <!-- BUILDER -->
+<div class="app">
 
-    <section class="builder">
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
-      <h2>What do you want to build?</h2>
+<aside class="sidebar" id="sidebar">
 
-      <p>
-        Describe your campaign, adventure, world, or anything else
-        you want DM-AI to create.
-      </p>
+    <div class="sidebar-header">
 
-      <textarea
-        id="prompt"
-        placeholder="Example: Create a dark fantasy campaign where an ancient dragon awakens beneath a ruined kingdom..."
-      ></textarea>
+        <div class="logo">
+            ⚔️ DM-AI
+        </div>
 
-      <button
-        id="generateButton"
-        class="generate"
-        onclick="generateCampaign()"
-      >
-        ⚔️ Generate Campaign
-      </button>
+        <button
+            class="new-campaign"
+            onclick="newCampaign()">
 
-      <div id="status">
-        <span class="loader"></span>
-        DM-AI is building your campaign...
-      </div>
+            + New Campaign
 
-      <div id="error"></div>
+        </button>
 
-    </section>
+    </div>
 
-    <!-- RESULTS -->
+    <div class="history-title">
+        Campaigns
+    </div>
 
-    <div id="results"></div>
+    <div
+        class="chat-list"
+        id="chatList">
+    </div>
 
-  </main>
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <button
+            class="mobile-menu"
+            onclick="toggleSidebar()">
+
+            ☰
+
+        </button>
+
+        <div
+            class="campaign-title"
+            id="campaignTitle">
+
+            New Campaign
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="chat-area"
+        id="chatArea">
+    </div>
+
+
+    <!-- CHAT BOX -->
+
+    <div class="input-section">
+
+        <div class="input-container">
+
+            <textarea
+                id="prompt"
+                placeholder="Describe the campaign you want..."
+                onkeydown="handleKey(event)">
+            </textarea>
+
+            <div class="input-bottom">
+
+                <div class="hint">
+                    Press Enter to generate
+                </div>
+
+                <button
+                    class="generate"
+                    id="generateButton"
+                    onclick="generateCampaign()">
+
+                    Generate ⚔️
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+
 
 <script>
 
-async function generateCampaign() {
+/* =========================================================
+   DATA
+========================================================= */
 
-  const promptBox = document.getElementById("prompt");
-  const button = document.getElementById("generateButton");
-  const status = document.getElementById("status");
-  const errorBox = document.getElementById("error");
-  const results = document.getElementById("results");
+let campaigns = [];
 
-  const prompt = promptBox.value.trim();
+let currentCampaign = null;
 
-  if (!prompt) {
-    errorBox.style.display = "block";
-    errorBox.textContent = "Tell DM-AI what you want to build first.";
-    return;
-  }
+let isGenerating = false;
 
-  button.disabled = true;
-  button.textContent = "⚔️ Building...";
-  status.style.display = "block";
-  errorBox.style.display = "none";
-  results.style.display = "none";
 
-  try {
+/* =========================================================
+   STORAGE
+========================================================= */
 
-    const response = await fetch("/api/generate", {
+function loadCampaigns() {
 
-      method: "POST",
+    try {
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+        const saved =
+            localStorage.getItem(
+                "dm_ai_campaigns"
+            );
 
-      body: JSON.stringify({
-        prompt: prompt
-      })
+        if (saved) {
+
+            campaigns =
+                JSON.parse(saved);
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        campaigns = [];
+
+    }
+
+}
+
+
+function saveCampaigns() {
+
+    localStorage.setItem(
+        "dm_ai_campaigns",
+        JSON.stringify(campaigns)
+    );
+
+}
+
+
+/* =========================================================
+   NEW CAMPAIGN
+========================================================= */
+
+function newCampaign() {
+
+    const campaign = {
+
+        id: Date.now(),
+
+        name: "New Campaign",
+
+        messages: []
+
+    };
+
+    campaigns.unshift(campaign);
+
+    currentCampaign = campaign;
+
+    saveCampaigns();
+
+    updateSidebar();
+
+    renderCampaign();
+
+    document
+        .getElementById("prompt")
+        .focus();
+
+    closeMobileSidebar();
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+function updateSidebar() {
+
+    const list =
+        document.getElementById(
+            "chatList"
+        );
+
+    list.innerHTML = "";
+
+    campaigns.forEach(campaign => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "chat-item " +
+            (
+                currentCampaign &&
+                currentCampaign.id === campaign.id
+                    ? "active"
+                    : ""
+            );
+
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "chat-name";
+
+        name.textContent =
+            "⚔️ " + campaign.name;
+
+        name.onclick = () => {
+
+            selectCampaign(
+                campaign.id
+            );
+
+        };
+
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.className =
+            "delete-chat";
+
+        deleteButton.textContent =
+            "✕";
+
+        deleteButton.onclick =
+            event => {
+
+                event.stopPropagation();
+
+                deleteCampaign(
+                    campaign.id
+                );
+
+            };
+
+
+        item.appendChild(name);
+
+        item.appendChild(
+            deleteButton
+        );
+
+        list.appendChild(item);
 
     });
 
-    const data = await response.json();
+}
 
-    console.log("DM-AI RESPONSE:", data);
 
-    if (!response.ok) {
+function selectCampaign(id) {
 
-      throw new Error(
-        data.error ||
-        data.details ||
-        "DM-AI could not generate your campaign."
-      );
+    currentCampaign =
+        campaigns.find(
+            campaign =>
+                campaign.id === id
+        );
+
+    if (!currentCampaign) {
+        return;
+    }
+
+    renderCampaign();
+
+    updateSidebar();
+
+    closeMobileSidebar();
+
+}
+
+
+function deleteCampaign(id) {
+
+    if (
+        !confirm(
+            "Delete this campaign?"
+        )
+    ) {
+        return;
+    }
+
+    campaigns =
+        campaigns.filter(
+            campaign =>
+                campaign.id !== id
+        );
+
+
+    if (
+        currentCampaign &&
+        currentCampaign.id === id
+    ) {
+
+        currentCampaign =
+            campaigns.length
+                ? campaigns[0]
+                : null;
 
     }
 
-    /*
-      Our API normally returns:
 
-      {
-        success: true,
-        campaign: {...}
-      }
+    saveCampaigns();
 
-      But this also handles the simpler response
-      format we used during testing.
-    */
 
-    let campaign = data.campaign;
+    if (!currentCampaign) {
 
-    if (!campaign && data.result) {
+        createFirstCampaign();
 
-      try {
-        campaign = JSON.parse(data.result);
-      } catch {
+    } else {
 
-        campaign = {
-          title: "DM-AI Creation",
-          description: data.result
-        };
+        updateSidebar();
 
-      }
+        renderCampaign();
 
     }
 
-    if (!campaign) {
-      throw new Error("No campaign data was returned.");
-    }
+}
 
-    renderCampaign(campaign);
 
-  } catch (error) {
+/* =========================================================
+   FIRST CAMPAIGN
+========================================================= */
 
-    console.error(error);
+function createFirstCampaign() {
 
-    errorBox.style.display = "block";
+    const campaign = {
 
-    errorBox.textContent =
-      "❌ " + error.message;
+        id: Date.now(),
 
-  } finally {
+        name: "New Campaign",
 
-    button.disabled = false;
-    button.textContent = "⚔️ Generate Campaign";
-    status.style.display = "none";
+        messages: []
 
-  }
+    };
+
+    campaigns = [campaign];
+
+    currentCampaign = campaign;
+
+    saveCampaigns();
+
+    updateSidebar();
+
+    renderCampaign();
 
 }
 
@@ -609,826 +990,2984 @@ async function generateCampaign() {
    RENDER CAMPAIGN
 ========================================================= */
 
-function renderCampaign(campaign) {
+function renderCampaign() {
 
-  const results = document.getElementById("results");
+    const area =
+        document.getElementById(
+            "chatArea"
+        );
 
-  results.innerHTML = "";
-
-  results.style.display = "block";
-
-
-  /* =========================
-     HEADER
-  ========================= */
-
-  const header = document.createElement("div");
-
-  header.className = "campaign-header";
-
-  header.innerHTML = `
-
-    <h1 class="campaign-title">
-      ${escapeHTML(campaign.title || "Untitled Campaign")}
-    </h1>
-
-    <div class="campaign-description">
-      ${escapeHTML(
-        campaign.description ||
-        campaign.summary ||
-        ""
-      )}
-    </div>
-
-    <div class="tags">
-
-      ${
-        campaign.setting
-        ? `<span class="tag">🌎 ${escapeHTML(campaign.setting)}</span>`
-        : ""
-      }
-
-      ${
-        campaign.tone
-        ? `<span class="tag">🎭 ${escapeHTML(campaign.tone)}</span>`
-        : ""
-      }
-
-      ${
-        campaign.recommendedLevel
-        ? `<span class="tag">⚔️ Level ${escapeHTML(campaign.recommendedLevel)}</span>`
-        : ""
-      }
-
-    </div>
-
-  `;
-
-  results.appendChild(header);
+    const title =
+        document.getElementById(
+            "campaignTitle"
+        );
 
 
-  /* =========================
-     MAIN STORY
-  ========================= */
+    if (!currentCampaign) {
 
-  if (campaign.mainStory || campaign.story) {
+        area.innerHTML = "";
 
-    let story = campaign.mainStory || campaign.story;
+        title.textContent =
+            "New Campaign";
 
-    if (typeof story === "object") {
-
-      story = Object.entries(story)
-        .map(([key, value]) => {
-
-          return `${formatTitle(key)}
-
-${typeof value === "string"
-            ? value
-            : JSON.stringify(value, null, 2)}`;
-
-        })
-        .join("\n\n");
+        return;
 
     }
 
-    addTextSection(
-      results,
-      "📖",
-      "Main Story",
-      story
+
+    title.textContent =
+        currentCampaign.name;
+
+
+    if (
+        !currentCampaign.messages ||
+        currentCampaign.messages.length === 0
+    ) {
+
+        area.innerHTML = `
+
+            <div class="welcome">
+
+                <div class="welcome-icon">
+                    🧙‍♂️
+                </div>
+
+                <h1>
+                    What do you want to create?
+                </h1>
+
+                <p>
+                    Tell DM-AI what you want and we'll build it for you.
+                </p>
+
+
+                <div class="examples">
+
+
+                    <!-- CHOICE 1 -->
+
+                    <div
+                        class="example"
+                        onclick="useExample(this)">
+
+                        <div class="example-title">
+                            🐉 Epic Fantasy
+                        </div>
+
+                        <div class="example-text">
+                            Create an epic fantasy campaign involving an ancient dragon returning after 1,000 years.
+                        </div>
+
+                    </div>
+
+
+                    <!-- CHOICE 2 -->
+
+                    <div
+                        class="example"
+                        onclick="useExample(this)">
+
+                        <div class="example-title">
+                            🩸 Dark Horror
+                        </div>
+
+                        <div class="example-text">
+                            Create a dark horror campaign where an entire village mysteriously disappears.
+                        </div>
+
+                    </div>
+
+
+                    <!-- CHOICE 3 -->
+
+                    <div
+                        class="example"
+                        onclick="useExample(this)">
+
+                        <div class="example-title">
+                            🏰 Political Intrigue
+                        </div>
+
+                        <div class="example-text">
+                            Create a campaign centered around rival kingdoms preparing for war.
+                        </div>
+
+                    </div>
+
+
+                    <!-- CHOICE 4 -->
+
+                    <div
+                        class="example"
+                        onclick="useExample(this)">
+
+                        <div class="example-title">
+                            🗡️ Dungeon Adventure
+                        </div>
+
+                        <div class="example-text">
+                            Create a dangerous dungeon filled with traps, monsters, treasure and a powerful boss.
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    area.innerHTML = "";
+
+
+    currentCampaign.messages.forEach(
+        message => {
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+            wrapper.className =
+                "message";
+
+
+            /* USER MESSAGE */
+
+            if (
+                message.role === "user"
+            ) {
+
+                wrapper.innerHTML = `
+
+                    <div class="message-label">
+                        YOU
+                    </div>
+
+                    <div class="message-user"></div>
+
+                `;
+
+
+                wrapper
+                    .querySelector(
+                        ".message-user"
+                    )
+                    .textContent =
+                        message.content;
+
+            }
+
+
+            /* AI MESSAGE */
+
+            else {
+
+                wrapper.innerHTML = `
+
+                    <div class="message-label">
+                        DM-AI
+                    </div>
+
+                    <div class="message-ai"></div>
+
+                `;
+
+
+                const aiBox =
+                    wrapper.querySelector(
+                        ".message-ai"
+                    );
+
+
+                if (
+                    message.data &&
+                    typeof message.data === "object"
+                ) {
+
+                    aiBox.appendChild(
+                        renderCampaignData(
+                            message.data
+                        )
+                    );
+
+                }
+
+                else {
+
+                    aiBox.textContent =
+                        message.content ||
+                        "";
+
+                }
+
+            }
+
+
+            area.appendChild(wrapper);
+
+        }
     );
 
-  }
+
+    area.scrollTop =
+        area.scrollHeight;
+
+}
 
 
-  /* =========================
-     LOCATIONS
-  ========================= */
+/* =========================================================
+   CAMPAIGN DATA RENDERER
+========================================================= */
 
-  renderCards(
-    results,
-    "🗺️",
-    "Locations",
-    campaign.locations,
-    item => {
+function renderCampaignData(data) {
 
-      return `
+    /*
+       IMPORTANT FIX:
 
-        <h3>${escapeHTML(item.name || "Unknown Location")}</h3>
+       Our Gemini API returns:
 
-        <div class="label">Description</div>
+       {
+          success: true,
+          campaign: {...}
+       }
 
-        <p>${escapeHTML(item.description || "")}</p>
+       Older versions returned:
 
-        ${renderList(
-          "Secrets",
-          item.secrets
-        )}
+       {
+          result: {...}
+       }
 
-      `;
+       This function now handles either.
+    */
 
-    }
-  );
+    let campaign = data;
 
+    if (
+        data &&
+        data.campaign &&
+        typeof data.campaign === "object"
+    ) {
 
-  /* =========================
-     NPCS
-  ========================= */
-
-  renderCards(
-    results,
-    "🧑",
-    "NPCs",
-    campaign.npcs,
-    item => {
-
-      return `
-
-        <h3>${escapeHTML(item.name || "Unknown NPC")}</h3>
-
-        <div class="label">Role</div>
-        <p>${escapeHTML(item.role || "")}</p>
-
-        <div class="label">Race</div>
-        <p>${escapeHTML(item.race || "")}</p>
-
-        <div class="label">Personality</div>
-        <p>${escapeHTML(item.personality || "")}</p>
-
-        <div class="label">Motivation</div>
-        <p>${escapeHTML(item.motivation || "")}</p>
-
-        <div class="label">Secret</div>
-        <p>${escapeHTML(item.secret || "")}</p>
-
-        <div class="label">Dialogue</div>
-        <p>“${escapeHTML(item.dialogue || "")}”</p>
-
-        ${renderStats(item.stats)}
-
-      `;
+        campaign = data.campaign;
 
     }
-  );
 
+    if (
+        data &&
+        data.result &&
+        typeof data.result === "object"
+    ) {
 
-  /* =========================
-     MONSTERS
-  ========================= */
-
-  renderCards(
-    results,
-    "👹",
-    "Monsters",
-    campaign.monsters,
-    item => {
-
-      return `
-
-        <h3>${escapeHTML(item.name || "Unknown Monster")}</h3>
-
-        <p>
-          ${escapeHTML(item.description || "")}
-        </p>
-
-        <div class="label">Difficulty</div>
-
-        <p>
-          ${escapeHTML(item.difficulty || "")}
-        </p>
-
-        ${renderStats(item)}
-
-        ${renderList(
-          "Attacks",
-          item.attacks
-        )}
-
-        ${renderList(
-          "Abilities",
-          item.abilities
-        )}
-
-        <div class="label">Tactics</div>
-
-        <p>
-          ${escapeHTML(item.tactics || "")}
-        </p>
-
-      `;
+        campaign = data.result;
 
     }
-  );
 
 
-  /* =========================
-     QUESTS
-  ========================= */
+    const container =
+        document.createElement(
+            "div"
+        );
 
-  renderCards(
-    results,
-    "🎯",
-    "Quests",
-    campaign.quests,
-    item => {
+    container.className =
+        "campaign-result";
 
-      return `
 
-        <h3>${escapeHTML(item.name || "Unknown Quest")}</h3>
+    /* =====================================================
+       CAMPAIGN HEADER
+    ===================================================== */
 
-        <div class="label">Type</div>
+    if (
+        campaign &&
+        (
+            campaign.title ||
+            campaign.description ||
+            campaign.overview
+        )
+    ) {
 
-        <p>${escapeHTML(item.type || "")}</p>
+        const header =
+            document.createElement(
+                "div"
+            );
 
-        <div class="label">Description</div>
+        header.className =
+            "campaign-header";
 
-        <p>${escapeHTML(item.description || "")}</p>
 
-        <div class="label">Objective</div>
+        const description =
+            campaign.description ||
+            campaign.overview ||
+            "";
 
-        <p>${escapeHTML(item.objective || "")}</p>
 
-        <div class="label">Reward</div>
+        header.innerHTML = `
 
-        <p>${escapeHTML(item.reward || "")}</p>
+            <h1>
+                🗺️
+                ${escapeHTML(
+                    campaign.title ||
+                    "Untitled Campaign"
+                )}
+            </h1>
 
-        <div class="label">Consequences</div>
+            <p>
+                ${escapeHTML(
+                    description
+                )}
+            </p>
 
-        <p>${escapeHTML(item.consequences || "")}</p>
+            <br>
 
-      `;
+            <div class="campaign-meta">
+
+                ${
+                    campaign.tone
+                    ? pill(
+                        "🎭 " +
+                        campaign.tone
+                    )
+                    : ""
+                }
+
+                ${
+                    campaign.recommendedLevel
+                    ? pill(
+                        "⚔️ Level " +
+                        campaign.recommendedLevel
+                    )
+                    : ""
+                }
+
+                ${
+                    campaign.setting
+                    ? pill(
+                        "🌎 " +
+                        campaign.setting
+                    )
+                    : ""
+                }
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            header
+        );
+
+
+        /* OVERVIEW */
+
+        if (
+            campaign.overview ||
+            campaign.openingHook ||
+            campaign.mainStory
+        ) {
+
+            addSection(
+                container,
+                "📖 Campaign Overview",
+                `
+
+                    ${
+                        campaign.overview
+                        ? `
+                            <p>
+                                ${escapeHTML(
+                                    campaign.overview
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${
+                        campaign.openingHook
+                        ? `
+                            <h4>Opening Hook</h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    campaign.openingHook
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${
+                        campaign.mainStory
+                        ? `
+                            <h4>Main Story</h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    campaign.mainStory
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+                `
+            );
+
+        }
 
     }
-  );
 
 
-  /* =========================
-     ENCOUNTERS
-  ========================= */
+    /* =====================================================
+       STORY OBJECT
+    ===================================================== */
 
-  renderCards(
-    results,
-    "⚔️",
-    "Encounters",
-    campaign.encounters,
-    item => {
+    if (
+        campaign.story &&
+        typeof campaign.story === "object"
+    ) {
 
-      return `
+        const storyHTML =
+            Object.entries(
+                campaign.story
+            )
+            .map(
+                ([key,value]) => `
 
-        <h3>${escapeHTML(item.name || "Unknown Encounter")}</h3>
+                    <h4>
+                        ${escapeHTML(
+                            formatTitle(key)
+                        )}
+                    </h4>
 
-        <div class="label">Location</div>
+                    <p>
+                        ${escapeHTML(
+                            typeof value === "string"
+                                ? value
+                                : JSON.stringify(
+                                    value,
+                                    null,
+                                    2
+                                )
+                        )}
+                    </p>
 
-        <p>${escapeHTML(item.location || "")}</p>
-
-        <div class="label">Difficulty</div>
-
-        <p>${escapeHTML(item.difficulty || "")}</p>
-
-        <div class="label">Description</div>
-
-        <p>${escapeHTML(item.description || "")}</p>
-
-        ${renderList(
-          "Enemies",
-          item.enemies
-        )}
-
-        ${renderList(
-          "Objectives",
-          item.objectives
-        )}
-
-        <div class="label">DM Notes</div>
-
-        <p>${escapeHTML(item.dmNotes || "")}</p>
-
-      `;
-
-    }
-  );
+                `
+            )
+            .join("");
 
 
-  /* =========================
-     ITEMS
-  ========================= */
-
-  renderCards(
-    results,
-    "🎒",
-    "Items & Treasure",
-    campaign.items,
-    item => {
-
-      return `
-
-        <h3>${escapeHTML(item.name || "Unknown Item")}</h3>
-
-        <div class="label">Type</div>
-
-        <p>${escapeHTML(item.type || "")}</p>
-
-        <div class="label">Rarity</div>
-
-        <p>${escapeHTML(item.rarity || "")}</p>
-
-        <div class="label">Description</div>
-
-        <p>${escapeHTML(item.description || "")}</p>
-
-        <div class="label">Effect</div>
-
-        <p>${escapeHTML(item.effect || "")}</p>
-
-      `;
+        addSection(
+            container,
+            "📖 Story",
+            storyHTML
+        );
 
     }
-  );
 
 
-  /* =========================
-     PLAYER CHARACTERS
-  ========================= */
+    /* =====================================================
+       CHAPTERS
+    ===================================================== */
 
-  renderCards(
-    results,
-    "🧙",
-    "Character Sheets",
-    campaign.playerCharacters ||
-    campaign.characters,
-    item => {
+    if (
+        Array.isArray(
+            campaign.chapters
+        )
+    ) {
 
-      const scores =
-        item.abilityScores ||
-        item.ability_scores;
+        addSection(
+            container,
+            "📚 Chapters",
+            cardGrid(
 
-      return `
+                campaign.chapters.map(
+                    chapter => `
 
-        <h3>${escapeHTML(item.name || "Unnamed Character")}</h3>
+                        <div
+                            class="content-card chapter">
 
-        <div class="label">Class</div>
+                            <div class="chapter-number">
+                                Chapter
+                                ${escapeHTML(
+                                    chapter.number ??
+                                    chapter.chapterNumber ??
+                                    ""
+                                )}
+                            </div>
 
-        <p>${escapeHTML(item.class || "")}</p>
+                            <h3>
+                                ${escapeHTML(
+                                    chapter.title ||
+                                    "Untitled Chapter"
+                                )}
+                            </h3>
 
-        <div class="label">Race</div>
+                            <p>
+                                ${escapeHTML(
+                                    chapter.summary ||
+                                    chapter.description ||
+                                    ""
+                                )}
+                            </p>
 
-        <p>${escapeHTML(item.race || "")}</p>
+                            ${
+                                listHTML(
+                                    "Objectives",
+                                    chapter.objectives
+                                )
+                            }
 
-        <div class="label">Background</div>
+                            ${
+                                listHTML(
+                                    "Events",
+                                    chapter.events
+                                )
+                            }
 
-        <p>${escapeHTML(item.background || "")}</p>
+                            ${
+                                listHTML(
+                                    "Encounters",
+                                    chapter.encounters
+                                )
+                            }
 
-        <div class="label">Personality</div>
+                            ${
+                                chapter.dmNotes
+                                ? `
+                                    <h4>DM Notes</h4>
+                                    <p>
+                                        ${escapeHTML(
+                                            chapter.dmNotes
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
 
-        <p>${escapeHTML(item.personality || "")}</p>
+                        </div>
 
-        <div class="label">Motivation</div>
+                    `
+                )
 
-        <p>${escapeHTML(item.motivation || "")}</p>
-
-        <div class="label">Backstory</div>
-
-        <p>${escapeHTML(item.backstory || "")}</p>
-
-        ${renderAbilityScores(scores)}
-
-        ${renderList(
-          "Equipment",
-          item.equipment
-        )}
-
-      `;
-
-    }
-  );
-
-
-  /* =========================
-     CHAPTERS
-  ========================= */
-
-  renderCards(
-    results,
-    "📚",
-    "Campaign Chapters",
-    campaign.chapters,
-    item => {
-
-      return `
-
-        <h3>
-          Chapter ${escapeHTML(
-            String(item.number || item.chapterNumber || "")
-          )}
-
-          ${
-            item.title
-            ? " — " + escapeHTML(item.title)
-            : ""
-          }
-
-        </h3>
-
-        <div class="label">Summary</div>
-
-        <p>${escapeHTML(item.summary || "")}</p>
-
-        ${renderList(
-          "Objectives",
-          item.objectives
-        )}
-
-        ${renderList(
-          "Events",
-          item.events
-        )}
-
-        ${renderList(
-          "Encounters",
-          item.encounters
-        )}
-
-        <div class="label">DM Notes</div>
-
-        <p>${escapeHTML(item.dmNotes || "")}</p>
-
-      `;
+            )
+        );
 
     }
-  );
 
 
-  /* =========================
-     FINAL BOSS
-  ========================= */
+    /* =====================================================
+       MAIN QUESTS
+    ===================================================== */
 
-  if (campaign.finalBoss || campaign.boss) {
+    if (
+        Array.isArray(
+            campaign.mainQuests
+        )
+    ) {
 
-    const boss =
-      campaign.finalBoss ||
-      campaign.boss;
+        addSection(
+            container,
+            "🎯 Main Quests",
+            cardGrid(
+
+                campaign.mainQuests.map(
+                    quest => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                🎯
+                                ${escapeHTML(
+                                    quest.name ||
+                                    "Main Quest"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${escapeHTML(
+                                    quest.description ||
+                                    ""
+                                )}
+                            </p>
+
+                            ${
+                                listHTML(
+                                    "Objectives",
+                                    quest.objectives
+                                )
+                            }
+
+                            ${
+                                listHTML(
+                                    "Rewards",
+                                    quest.rewards ||
+                                    quest.reward
+                                )
+                            }
+
+                            ${
+                                quest.consequences
+                                ? `
+                                    <h4>
+                                        Consequences
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.consequences
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       SIDE QUESTS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.sideQuests
+        )
+    ) {
+
+        addSection(
+            container,
+            "🧭 Side Quests",
+            cardGrid(
+
+                campaign.sideQuests.map(
+                    quest => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                🧭
+                                ${escapeHTML(
+                                    quest.name ||
+                                    "Side Quest"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${escapeHTML(
+                                    quest.description ||
+                                    ""
+                                )}
+                            </p>
+
+                            ${
+                                listHTML(
+                                    "Objectives",
+                                    quest.objectives
+                                )
+                            }
+
+                            ${
+                                listHTML(
+                                    "Rewards",
+                                    quest.rewards ||
+                                    quest.reward
+                                )
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       NPCS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.npcs
+        )
+    ) {
+
+        addSection(
+            container,
+            "👤 NPCs",
+            cardGrid(
+
+                campaign.npcs.map(
+                    npc => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                👤
+                                ${escapeHTML(
+                                    npc.name ||
+                                    "Unknown NPC"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${
+                                    npc.race
+                                    ? escapeHTML(
+                                        npc.race
+                                    )
+                                    : ""
+                                }
+
+                                ${
+                                    npc.race &&
+                                    npc.role
+                                    ? " • "
+                                    : ""
+                                }
+
+                                ${
+                                    npc.role
+                                    ? escapeHTML(
+                                        npc.role
+                                    )
+                                    : ""
+                                }
+
+                            </p>
+
+
+                            ${
+                                npc.appearance
+                                ? `
+                                    <h4>
+                                        Appearance
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            npc.appearance
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                npc.personality
+                                ? `
+                                    <h4>
+                                        Personality
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            npc.personality
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                npc.motivation
+                                ? `
+                                    <h4>
+                                        Motivation
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            npc.motivation
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                npc.secret
+                                ? `
+                                    <h4>
+                                        Secret
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            npc.secret
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                npc.relationshipToPlayers
+                                ? `
+                                    <h4>
+                                        Relationship
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            npc.relationshipToPlayers
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                npc.dialogue
+                                ? `
+                                    <h4>
+                                        Dialogue
+                                    </h4>
+
+                                    <p>
+                                        "${escapeHTML(
+                                            npc.dialogue
+                                        )}"
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                            ${
+                                renderStats(
+                                    npc.stats
+                                )
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       PLAYER CHARACTERS
+    ===================================================== */
+
+    const playerCharacters =
+        campaign.playerCharacters ||
+        campaign.characters;
+
+
+    if (
+        Array.isArray(
+            playerCharacters
+        )
+    ) {
+
+        addSection(
+            container,
+            "🧙 Character Sheets",
+            cardGrid(
+
+                playerCharacters.map(
+                    pc => {
+
+                        const scores =
+                            pc.abilityScores ||
+                            {};
+
+                        return `
+
+                            <div class="content-card">
+
+                                <h3>
+                                    🧙
+                                    ${escapeHTML(
+                                        pc.name ||
+                                        "Unnamed Character"
+                                    )}
+                                </h3>
+
+                                <p>
+
+                                    ${
+                                        pc.race
+                                        ? escapeHTML(
+                                            pc.race
+                                        )
+                                        : ""
+                                    }
+
+                                    ${
+                                        pc.race &&
+                                        pc.class
+                                        ? " • "
+                                        : ""
+                                    }
+
+                                    ${
+                                        pc.class
+                                        ? escapeHTML(
+                                            pc.class
+                                        )
+                                        : ""
+                                    }
+
+                                    ${
+                                        pc.level
+                                        ? " • Level " +
+                                          escapeHTML(
+                                              pc.level
+                                          )
+                                        : ""
+                                    }
+
+                                </p>
+
+
+                                <div class="stat-grid">
+
+                                    ${stat(
+                                        "STR",
+                                        pc.strength ??
+                                        scores.strength
+                                    )}
+
+                                    ${stat(
+                                        "DEX",
+                                        pc.dexterity ??
+                                        scores.dexterity
+                                    )}
+
+                                    ${stat(
+                                        "CON",
+                                        pc.constitution ??
+                                        scores.constitution
+                                    )}
+
+                                    ${stat(
+                                        "INT",
+                                        pc.intelligence ??
+                                        scores.intelligence
+                                    )}
+
+                                    ${stat(
+                                        "WIS",
+                                        pc.wisdom ??
+                                        scores.wisdom
+                                    )}
+
+                                    ${stat(
+                                        "CHA",
+                                        pc.charisma ??
+                                        scores.charisma
+                                    )}
+
+                                </div>
+
+
+                                ${
+                                    pc.hitPoints
+                                    ? `
+                                        <h4>
+                                            HP
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.hitPoints
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+
+                                ${
+                                    pc.armorClass
+                                    ? `
+                                        <h4>
+                                            Armor Class
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.armorClass
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+
+                                ${
+                                    pc.speed
+                                    ? `
+                                        <h4>
+                                            Speed
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.speed
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+
+                                ${
+                                    listHTML(
+                                        "Skills",
+                                        pc.skills
+                                    )
+                                }
+
+                                ${
+                                    listHTML(
+                                        "Saving Throws",
+                                        pc.savingThrows
+                                    )
+                                }
+
+                                ${
+                                    listHTML(
+                                        "Weapons",
+                                        pc.weapons
+                                    )
+                                }
+
+                                ${
+                                    listHTML(
+                                        "Spells",
+                                        pc.spells
+                                    )
+                                }
+
+                                ${
+                                    listHTML(
+                                        "Equipment",
+                                        pc.equipment
+                                    )
+                                }
+
+                                ${
+                                    listHTML(
+                                        "Features",
+                                        pc.features
+                                    )
+                                }
+
+
+                                ${
+                                    pc.background
+                                    ? `
+                                        <h4>
+                                            Background
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.background
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+
+                                ${
+                                    pc.personality
+                                    ? `
+                                        <h4>
+                                            Personality
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.personality
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+
+                                ${
+                                    pc.backstory
+                                    ? `
+                                        <h4>
+                                            Backstory
+                                        </h4>
+
+                                        <p>
+                                            ${escapeHTML(
+                                                pc.backstory
+                                            )}
+                                        </p>
+                                      `
+                                    : ""
+                                }
+
+                            </div>
+
+                        `;
+
+                    }
+
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       LOCATIONS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.locations
+        )
+    ) {
+
+        addSection(
+            container,
+            "🗺️ Locations",
+            cardGrid(
+
+                campaign.locations.map(
+                    location => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                📍
+                                ${escapeHTML(
+                                    location.name ||
+                                    "Unknown Location"
+                                )}
+                            </h3>
+
+                            ${
+                                location.type
+                                ? `
+                                    <p>
+                                        ${escapeHTML(
+                                            location.type
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                location.description
+                                ? `
+                                    <h4>
+                                        Description
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            location.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Important Details",
+                                    location.importantDetails
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Secrets",
+                                    location.secrets
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Encounters",
+                                    location.encounters
+                                )
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       MONSTERS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.monsters
+        )
+    ) {
+
+        addSection(
+            container,
+            "👹 Monsters",
+            cardGrid(
+
+                campaign.monsters.map(
+                    monster => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                👹
+                                ${escapeHTML(
+                                    monster.name ||
+                                    "Unknown Monster"
+                                )}
+                            </h3>
+
+                            <p>
+
+                                ${
+                                    monster.type
+                                    ? escapeHTML(
+                                        monster.type
+                                    )
+                                    : ""
+                                }
+
+                                ${
+                                    monster.size
+                                    ? " • " +
+                                      escapeHTML(
+                                          monster.size
+                                      )
+                                    : ""
+                                }
+
+                                ${
+                                    monster.challengeRating
+                                    ? " • CR " +
+                                      escapeHTML(
+                                          monster.challengeRating
+                                      )
+                                    : ""
+                                }
+
+                            </p>
+
+
+                            ${renderStats(monster)}
+
+
+                            ${
+                                monster.description
+                                ? `
+                                    <h4>
+                                        Description
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            monster.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Abilities",
+                                    monster.abilities
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Attacks",
+                                    monster.attacks
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Special Abilities",
+                                    monster.specialAbilities
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Tactics",
+                                    monster.tactics
+                                )
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       ENCOUNTERS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.encounters
+        )
+    ) {
+
+        addSection(
+            container,
+            "⚔️ Encounters",
+            cardGrid(
+
+                campaign.encounters.map(
+                    encounter => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                ⚔️
+                                ${escapeHTML(
+                                    encounter.name ||
+                                    "Unknown Encounter"
+                                )}
+                            </h3>
+
+
+                            <p>
+
+                                ${
+                                    encounter.location
+                                    ? escapeHTML(
+                                        encounter.location
+                                    )
+                                    : ""
+                                }
+
+                                ${
+                                    encounter.difficulty
+                                    ? " • " +
+                                      escapeHTML(
+                                          encounter.difficulty
+                                      )
+                                    : ""
+                                }
+
+                            </p>
+
+
+                            ${
+                                encounter.description
+                                ? `
+                                    <h4>
+                                        Description
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            encounter.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                encounter.environment
+                                ? `
+                                    <h4>
+                                        Environment
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            encounter.environment
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Enemies",
+                                    encounter.enemies
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Objectives",
+                                    encounter.objectives
+                                )
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Rewards",
+                                    encounter.rewards
+                                )
+                            }
+
+
+                            ${
+                                encounter.dmNotes
+                                ? `
+                                    <h4>
+                                        DM Notes
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            encounter.dmNotes
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       QUESTS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.quests
+        )
+    ) {
+
+        addSection(
+            container,
+            "🎯 Quests",
+            cardGrid(
+
+                campaign.quests.map(
+                    quest => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                🎯
+                                ${escapeHTML(
+                                    quest.name ||
+                                    "Quest"
+                                )}
+                            </h3>
+
+
+                            ${
+                                quest.type
+                                ? `
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.type
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                quest.description
+                                ? `
+                                    <h4>
+                                        Description
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                quest.objective
+                                ? `
+                                    <h4>
+                                        Objective
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.objective
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Objectives",
+                                    quest.objectives
+                                )
+                            }
+
+
+                            ${
+                                quest.reward
+                                ? `
+                                    <h4>
+                                        Reward
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.reward
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Rewards",
+                                    quest.rewards
+                                )
+                            }
+
+
+                            ${
+                                quest.consequences
+                                ? `
+                                    <h4>
+                                        Consequences
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            quest.consequences
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       ITEMS
+    ===================================================== */
+
+    const items =
+        campaign.items ||
+        campaign.loot;
+
+
+    if (
+        Array.isArray(items)
+    ) {
+
+        addSection(
+            container,
+            "🎒 Items & Treasure",
+            cardGrid(
+
+                items.map(
+                    item => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                💎
+                                ${escapeHTML(
+                                    item.name ||
+                                    "Unknown Item"
+                                )}
+                            </h3>
+
+
+                            ${
+                                item.type
+                                ? `
+                                    <p>
+                                        ${escapeHTML(
+                                            item.type
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                item.rarity
+                                ? `
+                                    <p>
+                                        ${escapeHTML(
+                                            item.rarity
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                item.value
+                                ? `
+                                    <p>
+                                        Value:
+                                        ${escapeHTML(
+                                            item.value
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                item.description
+                                ? `
+                                    <h4>
+                                        Description
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            item.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                item.effect
+                                ? `
+                                    <h4>
+                                        Effect
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            item.effect
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                item.specialEffect
+                                ? `
+                                    <h4>
+                                        Special Effect
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            item.specialEffect
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       FACTIONS
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.factions
+        )
+    ) {
+
+        addSection(
+            container,
+            "🏰 Factions",
+            cardGrid(
+
+                campaign.factions.map(
+                    faction => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                🏰
+                                ${escapeHTML(
+                                    faction.name ||
+                                    "Faction"
+                                )}
+                            </h3>
+
+
+                            <p>
+                                ${escapeHTML(
+                                    faction.description ||
+                                    ""
+                                )}
+                            </p>
+
+
+                            ${
+                                faction.goals
+                                ? `
+                                    <h4>
+                                        Goals
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            faction.goals
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+
+                            ${
+                                listHTML(
+                                    "Members",
+                                    faction.members
+                                )
+                            }
+
+
+                            ${
+                                faction.relationshipToPlayers
+                                ? `
+                                    <h4>
+                                        Relationship
+                                    </h4>
+
+                                    <p>
+                                        ${escapeHTML(
+                                            faction.relationshipToPlayers
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       LORE
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.lore
+        )
+    ) {
+
+        addSection(
+            container,
+            "📜 World Lore",
+            cardGrid(
+
+                campaign.lore.map(
+                    entry => `
+
+                        <div class="content-card">
+
+                            <h3>
+                                📜
+                                ${escapeHTML(
+                                    entry.topic ||
+                                    entry.name ||
+                                    "Lore"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${escapeHTML(
+                                    entry.information ||
+                                    entry.description ||
+                                    ""
+                                )}
+                            </p>
+
+                        </div>
+
+                    `
+                )
+
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       FINAL BOSS
+    ===================================================== */
+
+    const finalBoss =
+        campaign.finalBoss ||
+        campaign.boss;
+
+
+    if (
+        finalBoss &&
+        typeof finalBoss === "object"
+    ) {
+
+        addSection(
+            container,
+            "👑 Final Boss",
+            `
+
+                <div class="content-card boss">
+
+                    <h3>
+                        👑
+                        ${escapeHTML(
+                            finalBoss.name ||
+                            "Final Boss"
+                        )}
+                    </h3>
+
+
+                    ${
+                        finalBoss.description
+                        ? `
+                            <p>
+                                ${escapeHTML(
+                                    finalBoss.description
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${renderStats(finalBoss)}
+
+
+                    ${
+                        finalBoss.difficulty
+                        ? `
+                            <h4>
+                                Difficulty
+                            </h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    finalBoss.difficulty
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${
+                        finalBoss.motivation
+                        ? `
+                            <h4>
+                                Motivation
+                            </h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    finalBoss.motivation
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${
+                        finalBoss.location
+                        ? `
+                            <h4>
+                                Location
+                            </h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    finalBoss.location
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+
+                    ${
+                        listHTML(
+                            "Abilities",
+                            finalBoss.abilities
+                        )
+                    }
+
+
+                    ${
+                        listHTML(
+                            "Attacks",
+                            finalBoss.attacks
+                        )
+                    }
+
+
+                    ${
+                        listHTML(
+                            "Phases",
+                            finalBoss.phases
+                        )
+                    }
+
+
+                    ${
+                        listHTML(
+                            "Weaknesses",
+                            finalBoss.weaknesses
+                        )
+                    }
+
+
+                    ${
+                        listHTML(
+                            "Rewards",
+                            finalBoss.rewards
+                        )
+                    }
+
+
+                    ${
+                        finalBoss.tactics
+                        ? `
+                            <h4>
+                                Tactics
+                            </h4>
+
+                            <p>
+                                ${escapeHTML(
+                                    finalBoss.tactics
+                                )}
+                            </p>
+                          `
+                        : ""
+                    }
+
+                </div>
+
+            `
+        );
+
+    }
+
+
+    /* =====================================================
+       DM NOTES
+    ===================================================== */
+
+    if (
+        Array.isArray(
+            campaign.dmNotes
+        )
+    ) {
+
+        addSection(
+            container,
+            "🎲 DM Notes",
+            `
+
+                <div class="content-card">
+
+                    ${listOnly(
+                        campaign.dmNotes
+                    )}
+
+                </div>
+
+            `
+        );
+
+    }
+
+
+    /*
+       FALLBACK
+
+       If Gemini returns a simple text response
+       instead of structured campaign JSON.
+    */
+
+    if (
+        container.children.length === 0
+    ) {
+
+        const fallback =
+            document.createElement(
+                "div"
+            );
+
+        fallback.className =
+            "content-card";
+
+        fallback.innerHTML = `
+
+            <p>
+                ${escapeHTML(
+                    typeof campaign === "string"
+                        ? campaign
+                        : JSON.stringify(
+                            campaign,
+                            null,
+                            2
+                        )
+                )}
+            </p>
+
+        `;
+
+        container.appendChild(
+            fallback
+        );
+
+    }
+
+
+    return container;
+
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+function addSection(
+    container,
+    title,
+    content
+) {
 
     const section =
-      document.createElement("section");
+        document.createElement(
+            "div"
+        );
 
-    section.className = "section boss";
+    section.className =
+        "section";
 
     section.innerHTML = `
 
-      <h2 class="section-title">
-        👑 Final Boss
-      </h2>
-
-      <div class="card">
-
-        <h3>
-          ${escapeHTML(
-            boss.name || "Final Boss"
-          )}
-        </h3>
-
-        <p>
-          ${escapeHTML(
-            boss.description || ""
-          )}
-        </p>
-
-        <div class="label">Difficulty</div>
-
-        <p>
-          ${escapeHTML(
-            boss.difficulty || ""
-          )}
-        </p>
-
-        ${renderStats(boss)}
-
-        ${renderList(
-          "Attacks",
-          boss.attacks
-        )}
-
-        ${renderList(
-          "Abilities",
-          boss.abilities
-        )}
-
-        ${renderList(
-          "Phases",
-          boss.phases
-        )}
-
-        <div class="label">
-          Tactics
+        <div class="section-title">
+            ${title}
         </div>
 
-        <p>
-          ${escapeHTML(
-            boss.tactics || ""
-          )}
-        </p>
-
-      </div>
+        <div class="section-body">
+            ${content}
+        </div>
 
     `;
 
-    results.appendChild(section);
-
-  }
-
-
-  /* =========================
-     DM NOTES
-  ========================= */
-
-  renderCards(
-    results,
-    "🎲",
-    "DM Notes",
-    campaign.dmNotes,
-    item => {
-
-      if (typeof item === "string") {
-
-        return `
-          <p>${escapeHTML(item)}</p>
-        `;
-
-      }
-
-      return `
-        <h3>
-          ${escapeHTML(
-            item.title || "DM Tip"
-          )}
-        </h3>
-
-        <p>
-          ${escapeHTML(
-            item.description || ""
-          )}
-        </p>
-      `;
-
-    }
-  );
-
-
-  /* Scroll to result */
-
-  results.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+    container.appendChild(
+        section
+    );
 
 }
 
 
 /* =========================================================
-   SECTION HELPERS
+   CARD GRID
 ========================================================= */
 
-function addTextSection(
-  parent,
-  icon,
-  title,
-  text
-) {
+function cardGrid(cards) {
 
-  const section =
-    document.createElement("section");
+    return `
 
-  section.className = "section";
+        <div class="card-grid">
 
-  section.innerHTML = `
+            ${cards.join("")}
 
-    <h2 class="section-title">
-      ${icon} ${title}
-    </h2>
+        </div>
 
-    <div class="story">
-      ${escapeHTML(text || "")}
-    </div>
-
-  `;
-
-  parent.appendChild(section);
-}
-
-
-function renderCards(
-  parent,
-  icon,
-  title,
-  items,
-  renderer
-) {
-
-  if (!items || !Array.isArray(items) || items.length === 0) {
-    return;
-  }
-
-  const section =
-    document.createElement("section");
-
-  section.className = "section";
-
-  const grid =
-    document.createElement("div");
-
-  grid.className = "grid";
-
-  items.forEach(item => {
-
-    const card =
-      document.createElement("div");
-
-    card.className = "card";
-
-    card.innerHTML =
-      renderer(item);
-
-    grid.appendChild(card);
-
-  });
-
-  section.innerHTML = `
-    <h2 class="section-title">
-      ${icon} ${title}
-    </h2>
-  `;
-
-  section.appendChild(grid);
-
-  parent.appendChild(section);
-}
-
-
-function renderList(
-  title,
-  items
-) {
-
-  if (!items) {
-    return "";
-  }
-
-  if (!Array.isArray(items) || items.length === 0) {
-    return "";
-  }
-
-  return `
-
-    <div class="label">
-      ${escapeHTML(title)}
-    </div>
-
-    <ul>
-
-      ${items.map(item => {
-
-        const value =
-          typeof item === "string"
-            ? item
-            : JSON.stringify(item);
-
-        return `
-          <li>
-            ${escapeHTML(value)}
-          </li>
-        `;
-
-      }).join("")}
-
-    </ul>
-
-  `;
-
-}
-
-
-function renderAbilityScores(
-  scores
-) {
-
-  if (!scores) {
-    return "";
-  }
-
-  return `
-
-    <div class="label">
-      Ability Scores
-    </div>
-
-    <div class="stats">
-
-      ${statBox("STR", scores.strength)}
-
-      ${statBox("DEX", scores.dexterity)}
-
-      ${statBox("CON", scores.constitution)}
-
-      ${statBox("INT", scores.intelligence)}
-
-      ${statBox("WIS", scores.wisdom)}
-
-      ${statBox("CHA", scores.charisma)}
-
-    </div>
-
-  `;
-
-}
-
-
-function statBox(
-  name,
-  value
-) {
-
-  return `
-
-    <div class="stat">
-
-      <strong>
-        ${escapeHTML(
-          String(value ?? "-")
-        )}
-      </strong>
-
-      <span>
-        ${name}
-      </span>
-
-    </div>
-
-  `;
-
-}
-
-
-function renderStats(
-  stats
-) {
-
-  if (!stats) {
-    return "";
-  }
-
-  return `
-
-    <div class="stats">
-
-      ${statBox(
-        "AC",
-        stats.armorClass
-      )}
-
-      ${statBox(
-        "HP",
-        stats.hitPoints
-      )}
-
-      ${statBox(
-        "Speed",
-        stats.speed
-      )}
-
-    </div>
-
-  `;
+    `;
 
 }
 
 
 /* =========================================================
-   UTILITIES
+   LIST
+========================================================= */
+
+function listHTML(
+    title,
+    items
+) {
+
+    if (
+        items === undefined ||
+        items === null
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        !Array.isArray(items)
+    ) {
+
+        return `
+
+            <h4>
+                ${escapeHTML(title)}
+            </h4>
+
+            <p>
+                ${escapeHTML(
+                    String(items)
+                )}
+            </p>
+
+        `;
+
+    }
+
+
+    if (
+        items.length === 0
+    ) {
+
+        return "";
+
+    }
+
+
+    return `
+
+        <h4>
+            ${escapeHTML(title)}
+        </h4>
+
+        <ul>
+
+            ${items.map(item => {
+
+                const value =
+                    typeof item === "object"
+                        ? JSON.stringify(
+                            item
+                        )
+                        : item;
+
+                return `
+
+                    <li>
+                        ${escapeHTML(
+                            value
+                        )}
+                    </li>
+
+                `;
+
+            }).join("")}
+
+        </ul>
+
+    `;
+
+}
+
+
+/* =========================================================
+   LIST ONLY
+========================================================= */
+
+function listOnly(items) {
+
+    if (
+        !Array.isArray(items)
+    ) {
+
+        return "";
+
+    }
+
+
+    return `
+
+        <ul>
+
+            ${items.map(item => {
+
+                const value =
+                    typeof item === "object"
+                        ? JSON.stringify(
+                            item
+                        )
+                        : item;
+
+                return `
+
+                    <li>
+                        ${escapeHTML(
+                            value
+                        )}
+                    </li>
+
+                `;
+
+            }).join("")}
+
+        </ul>
+
+    `;
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderStats(stats) {
+
+    if (
+        !stats ||
+        typeof stats !== "object"
+    ) {
+
+        return "";
+
+    }
+
+
+    return `
+
+        <div class="stat-grid">
+
+            ${
+                stat(
+                    "AC",
+                    stats.armorClass
+                )
+            }
+
+            ${
+                stat(
+                    "HP",
+                    stats.hitPoints
+                )
+            }
+
+            ${
+                stat(
+                    "Speed",
+                    stats.speed
+                )
+            }
+
+            ${
+                stat(
+                    "CR",
+                    stats.challengeRating
+                )
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   STAT
+========================================================= */
+
+function stat(
+    label,
+    value
+) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+
+        value = "-";
+
+    }
+
+
+    return `
+
+        <div class="stat">
+
+            <span class="stat-label">
+                ${escapeHTML(label)}
+            </span>
+
+            <span class="stat-value">
+                ${escapeHTML(value)}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   PILL
+========================================================= */
+
+function pill(text) {
+
+    return `
+
+        <span class="meta-pill">
+
+            ${escapeHTML(text)}
+
+        </span>
+
+    `;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   FORMAT TITLE
 ========================================================= */
 
 function formatTitle(text) {
 
-  return String(text)
-    .replace(/([A-Z])/g, " $1")
-    .replace(/^./, char => char.toUpperCase());
+    return String(text)
+
+        .replace(
+            /([A-Z])/g,
+            " $1"
+        )
+
+        .replace(
+            /^./,
+            char =>
+                char.toUpperCase()
+        );
 
 }
 
 
-function escapeHTML(value) {
+/* =========================================================
+   GENERATE
+========================================================= */
 
-  if (value === null || value === undefined) {
-    return "";
-  }
+async function generateCampaign() {
 
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    if (isGenerating) {
+        return;
+    }
+
+
+    const input =
+        document.getElementById(
+            "prompt"
+        );
+
+    const button =
+        document.getElementById(
+            "generateButton"
+        );
+
+
+    const prompt =
+        input.value.trim();
+
+
+    if (!prompt) {
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    if (!currentCampaign) {
+
+        createFirstCampaign();
+
+    }
+
+
+    /* USER MESSAGE */
+
+    currentCampaign.messages.push({
+
+        role: "user",
+
+        content: prompt
+
+    });
+
+
+    /* NAME CAMPAIGN */
+
+    if (
+        currentCampaign.name ===
+        "New Campaign"
+    ) {
+
+        currentCampaign.name =
+            createCampaignName(
+                prompt
+            );
+
+    }
+
+
+    input.value = "";
+
+    input.style.height = "70px";
+
+
+    saveCampaigns();
+
+    updateSidebar();
+
+    renderCampaign();
+
+
+    isGenerating = true;
+
+    button.disabled = true;
+
+    button.textContent =
+        "Creating... ⚔️";
+
+
+    /* LOADING MESSAGE */
+
+    currentCampaign.messages.push({
+
+        role: "ai",
+
+        content:
+            "🧙 DM-AI is building your campaign..."
+
+    });
+
+
+    renderCampaign();
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/generate",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            prompt:
+                                prompt
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "DM-AI RESPONSE:",
+            data
+        );
+
+
+        /* REMOVE LOADING */
+
+        currentCampaign.messages.pop();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                data.error ||
+
+                data.details ||
+
+                "The AI request failed."
+
+            );
+
+        }
+
+
+        /*
+           IMPORTANT FIX:
+
+           New API:
+
+           data.campaign
+
+           Older API:
+
+           data.result
+        */
+
+        let campaign =
+            data.campaign;
+
+
+        if (
+            !campaign &&
+            data.result
+        ) {
+
+            campaign =
+                data.result;
+
+        }
+
+
+        /*
+           Sometimes Gemini may return
+           the JSON as a string.
+        */
+
+        if (
+            typeof campaign ===
+            "string"
+        ) {
+
+            try {
+
+                campaign =
+                    JSON.parse(
+                        campaign
+                    );
+
+            } catch {
+
+                /*
+                   Keep it as text if it
+                   isn't JSON.
+                */
+
+            }
+
+        }
+
+
+        if (!campaign) {
+
+            throw new Error(
+                "DM-AI returned no campaign data."
+            );
+
+        }
+
+
+        currentCampaign.messages.push({
+
+            role: "ai",
+
+            content: "",
+
+            data: campaign
+
+        });
+
+
+        saveCampaigns();
+
+        renderCampaign();
+
+        updateSidebar();
+
+
+    } catch (error) {
+
+        console.error(
+            "DM-AI error:",
+            error
+        );
+
+
+        currentCampaign.messages.pop();
+
+
+        currentCampaign.messages.push({
+
+            role: "ai",
+
+            content:
+                "⚠️ Something went wrong.\n\n" +
+                error.message
+
+        });
+
+
+        saveCampaigns();
+
+        renderCampaign();
+
+    }
+
+
+    isGenerating = false;
+
+    button.disabled = false;
+
+    button.textContent =
+        "Generate ⚔️";
 
 }
+
+
+/* =========================================================
+   CAMPAIGN NAME
+========================================================= */
+
+function createCampaignName(
+    prompt
+) {
+
+    let name =
+        prompt
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (
+        name.length > 30
+    ) {
+
+        name =
+            name.substring(
+                0,
+                30
+            ) +
+            "...";
+
+    }
+
+
+    return name;
+
+}
+
+
+/* =========================================================
+   EXAMPLE BUTTONS
+========================================================= */
+
+function useExample(element) {
+
+    const text =
+        element
+            .querySelector(
+                ".example-text"
+            )
+            .textContent;
+
+
+    const input =
+        document.getElementById(
+            "prompt"
+        );
+
+
+    input.value =
+        text;
+
+
+    input.focus();
+
+
+    input.style.height =
+        "auto";
+
+
+    input.style.height =
+        Math.min(
+            input.scrollHeight,
+            180
+        ) + "px";
+
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+function handleKey(event) {
+
+    if (
+        event.key === "Enter" &&
+        !event.shiftKey
+    ) {
+
+        event.preventDefault();
+
+        generateCampaign();
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+function toggleSidebar() {
+
+    document
+        .getElementById(
+            "sidebar"
+        )
+        .classList.toggle(
+            "open"
+        );
+
+}
+
+
+function closeMobileSidebar() {
+
+    document
+        .getElementById(
+            "sidebar"
+        )
+        .classList.remove(
+            "open"
+        );
+
+}
+
+
+/* =========================================================
+   TEXTAREA AUTO RESIZE
+========================================================= */
+
+document
+    .getElementById("prompt")
+    .addEventListener(
+        "input",
+        function() {
+
+            this.style.height =
+                "auto";
+
+            this.style.height =
+                Math.min(
+                    this.scrollHeight,
+                    180
+                ) + "px";
+
+        }
+    );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+loadCampaigns();
+
+
+if (
+    campaigns.length > 0
+) {
+
+    currentCampaign =
+        campaigns[0];
+
+} else {
+
+    createFirstCampaign();
+
+}
+
+
+updateSidebar();
+
+renderCampaign();
 
 </script>
 
