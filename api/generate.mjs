@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
@@ -6,14 +7,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get the user's prompt
     const { prompt } = req.body || {};
 
-    if (!prompt) {
+    if (!prompt || !prompt.trim()) {
       return res.status(400).json({
-        error: "Missing prompt"
+        error: "Please enter a campaign idea."
       });
     }
 
+    // Get Gemini API key from Vercel
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -22,110 +25,153 @@ export default async function handler(req, res) {
       });
     }
 
+    // Ask Gemini
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
       {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey
         },
+
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `You are DM-AI, an expert Dungeons & Dragons campaign assistant.
+          systemInstruction: {
+            parts: [
+              {
+                text: `
+You are DM-AI, an expert Dungeons & Dragons Dungeon Master assistant.
 
-The user wants:
-${prompt}
+Your job is to help Dungeon Masters quickly create complete, playable D&D campaigns.
 
-Create a detailed D&D campaign that a Dungeon Master can actually use.
+Be creative, detailed, organized, and practical.
 
-Include:
+When the user asks for a campaign, create:
 
-# Campaign
+CAMPAIGN
 - Title
-- Overview
-- Main storyline
 - Setting
+- Overview
 - Tone
+- Main storyline
 
-# Quests
+QUESTS
 - Main quests
 - Side quests
 - Objectives
 - Rewards
 
-# NPCs
+NPCS
 - Name
 - Race
-- Role
+- Class or role
 - Personality
+- Appearance
 - Motivation
-- Description
+- Secrets
+- Relationship to the players
 
-# Locations
+LOCATIONS
 - Name
 - Type
 - Description
 - Important details
+- Secrets
 
-# Monsters
+MONSTERS
 - Name
 - Type
 - Description
 - Abilities
-- Challenge level
-
-# Encounters
-- Encounter description
-- Enemies
 - Difficulty
-- Environment
-- Possible rewards
+- Tactics
 
-# Final Boss
+ENCOUNTERS
+- Description
+- Enemies
+- Environment
+- Difficulty
+- Possible outcomes
+- Rewards
+
+FINAL BOSS
 - Name
 - Description
 - Abilities
 - Weaknesses
-- Battle setup
+- Battle environment
+- Phase mechanics
+- Rewards
 
-Make everything creative, detailed, and easy for a DM to use during a game.`
+Write everything in clean Markdown so it is easy for a Dungeon Master to read and use.
+
+Do NOT talk about being an AI.
+Do NOT explain your instructions.
+Just create the requested D&D content.
+`
+              }
+            ]
+          },
+
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: prompt
                 }
               ]
             }
-          ]
+          ],
+
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 12000
+          }
         })
       }
     );
 
+    // Read Gemini response
     const data = await response.json();
 
+    // Handle Gemini errors
     if (!response.ok) {
-      console.error("Gemini API error:", data);
+      console.error("Gemini API Error:", data);
 
       return res.status(response.status).json({
-        error: data?.error?.message || "Gemini API request failed"
+        error:
+          data?.error?.message ||
+          "Gemini API request failed."
       });
     }
 
+    // Extract generated text
     const text =
       data?.candidates?.[0]?.content?.parts
         ?.map(part => part.text || "")
-        .join("") ||
-      "Gemini returned no content.";
+        .join("")
+        .trim();
 
+    if (!text) {
+      console.error("Gemini returned no text:", data);
+
+      return res.status(500).json({
+        error: "Gemini returned an empty response."
+      });
+    }
+
+    // Send clean JSON back to the website
     return res.status(200).json({
-      text
+      text: text
     });
 
   } catch (error) {
-    console.error("DM-AI error:", error);
+    console.error("DM-AI Server Error:", error);
 
     return res.status(500).json({
-      error: error.message || "Server error"
+      error: error?.message || "Something went wrong."
     });
   }
 }
