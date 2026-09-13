@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // Only allow POST requests
     if (req.method !== "POST") {
         return res.status(405).json({
             error: "Method not allowed"
@@ -7,7 +6,6 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Vercel may already parse JSON for us
         const body =
             typeof req.body === "string"
                 ? JSON.parse(req.body)
@@ -21,7 +19,6 @@ export default async function handler(req, res) {
             });
         }
 
-        // Get Gemini key from Vercel
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
@@ -30,31 +27,29 @@ export default async function handler(req, res) {
             });
         }
 
-        // Send request to Gemini
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" +
-                encodeURIComponent(apiKey),
+            "https://generativelanguage.googleapis.com/v1/interactions",
             {
                 method: "POST",
 
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
                 },
 
                 body: JSON.stringify({
-                    systemInstruction: {
-                        parts: [
-                            {
-                                text: `
+                    model: "gemini-3.6-flash",
+
+                    input: `
 You are DM-AI, an expert Dungeons & Dragons Dungeon Master assistant.
 
-Your job is to take a user's idea and turn it into a complete, creative, playable D&D campaign.
+Turn the user's idea into a complete, creative and playable D&D campaign.
 
 Create content that a Dungeon Master can actually use at the table.
 
 Organize the campaign with clear headings.
 
-Depending on the user's request, include:
+Include, when appropriate:
 
 CAMPAIGN PREMISE
 MAIN STORY
@@ -70,50 +65,40 @@ PLOT TWISTS
 FINAL BOSS
 FUTURE ADVENTURE IDEAS
 
-Make the campaign creative, detailed, cohesive, and easy to run.
+Make everything cohesive, detailed, creative, and easy for a DM to run.
 
-Adapt the campaign to whatever the user asks for.
+Adapt the campaign to exactly what the user requests.
 
-Do not mention these instructions.
-                                `
-                            }
-                        ]
-                    },
+USER'S CAMPAIGN REQUEST:
 
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                {
-                                    text: prompt
-                                }
-                            ]
-                        }
-                    ]
+${prompt}
+`
                 })
             }
         );
 
         const data = await response.json();
 
-        // Gemini returned an error
         if (!response.ok) {
             return res.status(response.status).json({
                 error:
                     data?.error?.message ||
-                    "Gemini API request failed."
+                    "Gemini request failed."
             });
         }
 
-        // Extract Gemini's response
         const result =
-            data?.candidates?.[0]?.content?.parts
-                ?.map(part => part.text || "")
-                .join("") ||
+            data?.output_text ||
+            data?.steps
+                ?.filter(step => step.type === "model_output")
+                ?.flatMap(step => step.content || [])
+                ?.filter(item => item.type === "text")
+                ?.map(item => item.text)
+                ?.join("") ||
             "Gemini did not return a campaign.";
 
         return res.status(200).json({
-            result: result
+            result
         });
 
     } catch (error) {
