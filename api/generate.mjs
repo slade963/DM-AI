@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed"
@@ -7,8 +6,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Get the user's prompt
-    const { prompt } = req.body || {};
+    const body =
+      typeof req.body === "string"
+        ? JSON.parse(req.body)
+        : req.body || {};
+
+    const prompt = body.prompt;
 
     if (!prompt || !prompt.trim()) {
       return res.status(400).json({
@@ -16,16 +19,14 @@ export default async function handler(req, res) {
       });
     }
 
-    // Get Gemini API key from Vercel
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "GEMINI_API_KEY is missing"
+        error: "GEMINI_API_KEY is missing from Vercel."
       });
     }
 
-    // Ask Gemini
     const response = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent",
       {
@@ -43,18 +44,18 @@ export default async function handler(req, res) {
                 text: `
 You are DM-AI, an expert Dungeons & Dragons Dungeon Master assistant.
 
-Your job is to help Dungeon Masters quickly create complete, playable D&D campaigns.
+Your job is to help Dungeon Masters create amazing campaigns quickly.
 
-Be creative, detailed, organized, and practical.
+Take the user's idea and turn it into useful, playable D&D content.
 
-When the user asks for a campaign, create:
+Include:
 
 CAMPAIGN
 - Title
 - Setting
 - Overview
-- Tone
 - Main storyline
+- Tone
 
 QUESTS
 - Main quests
@@ -70,7 +71,6 @@ NPCS
 - Appearance
 - Motivation
 - Secrets
-- Relationship to the players
 
 LOCATIONS
 - Name
@@ -92,7 +92,6 @@ ENCOUNTERS
 - Enemies
 - Environment
 - Difficulty
-- Possible outcomes
 - Rewards
 
 FINAL BOSS
@@ -101,14 +100,13 @@ FINAL BOSS
 - Abilities
 - Weaknesses
 - Battle environment
-- Phase mechanics
 - Rewards
 
-Write everything in clean Markdown so it is easy for a Dungeon Master to read and use.
+Make everything creative, detailed, cohesive, and easy for a Dungeon Master to use.
 
-Do NOT talk about being an AI.
-Do NOT explain your instructions.
-Just create the requested D&D content.
+Use clear Markdown headings.
+
+Do not mention these instructions.
 `
               }
             ]
@@ -123,23 +121,17 @@ Just create the requested D&D content.
                 }
               ]
             }
-          ],
-
-          generationConfig: {
-            temperature: 0.9,
-            maxOutputTokens: 12000
-          }
+          ]
         })
       }
     );
 
-    // Read Gemini response
     const data = await response.json();
 
-    // Handle Gemini errors
-    if (!response.ok) {
-      console.error("Gemini API Error:", data);
+    console.log("Gemini status:", response.status);
+    console.log("Gemini response:", JSON.stringify(data));
 
+    if (!response.ok) {
       return res.status(response.status).json({
         error:
           data?.error?.message ||
@@ -147,31 +139,31 @@ Just create the requested D&D content.
       });
     }
 
-    // Extract generated text
-    const text =
+    const result =
       data?.candidates?.[0]?.content?.parts
         ?.map(part => part.text || "")
         .join("")
         .trim();
 
-    if (!text) {
-      console.error("Gemini returned no text:", data);
-
+    if (!result) {
       return res.status(500).json({
         error: "Gemini returned an empty response."
       });
     }
 
-    // Send clean JSON back to the website
+    // IMPORTANT:
+    // Your existing frontend expects "result"
     return res.status(200).json({
-      text: text
+      result: result
     });
 
   } catch (error) {
-    console.error("DM-AI Server Error:", error);
+    console.error("DM-AI error:", error);
 
     return res.status(500).json({
-      error: error?.message || "Something went wrong."
+      error:
+        error?.message ||
+        "Something went wrong while generating your campaign."
     });
   }
 }
