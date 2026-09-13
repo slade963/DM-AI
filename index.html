@@ -35,8 +35,8 @@
 
         .fantasy-emoji {
             position: absolute;
-            font-size: 45px;
-            opacity: 0.07;
+            font-size: 48px;
+            opacity: 0.065;
             animation: float 12s infinite ease-in-out;
         }
 
@@ -87,6 +87,18 @@
             animation-delay: 2s;
         }
 
+        .emoji9 {
+            top: 75%;
+            left: 45%;
+            animation-delay: 7s;
+        }
+
+        .emoji10 {
+            top: 15%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
         @keyframes float {
             0%, 100% {
                 transform: translateY(0px) rotate(0deg);
@@ -98,7 +110,7 @@
         }
 
         /* =========================
-           APP LAYOUT
+           APP
         ========================= */
 
         .app {
@@ -114,10 +126,11 @@
 
         .sidebar {
             width: 270px;
-            background: #141416;
+            background: rgba(20, 20, 22, 0.97);
             border-right: 1px solid #29292d;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             transition: transform 0.3s ease;
         }
 
@@ -188,12 +201,13 @@
             text-overflow: ellipsis;
             font-size: 14px;
             padding-right: 8px;
+            flex: 1;
         }
 
         .delete-chat {
             background: none;
             border: none;
-            color: #777;
+            color: #777777;
             cursor: pointer;
             font-size: 14px;
             opacity: 0;
@@ -225,7 +239,8 @@
             display: flex;
             align-items: center;
             padding: 0 25px;
-            background: rgba(13, 13, 15, 0.85);
+            background: rgba(13, 13, 15, 0.88);
+            flex-shrink: 0;
         }
 
         .mobile-menu {
@@ -241,6 +256,7 @@
         .campaign-title {
             font-size: 16px;
             color: #dddddd;
+            font-weight: 600;
         }
 
         /* =========================
@@ -251,17 +267,18 @@
             flex: 1;
             overflow-y: auto;
             padding: 40px 20px;
+            scroll-behavior: smooth;
         }
 
         .welcome {
             max-width: 850px;
             margin: auto;
             text-align: center;
-            padding-top: 10vh;
+            padding-top: 7vh;
         }
 
         .welcome-icon {
-            font-size: 48px;
+            font-size: 50px;
             margin-bottom: 15px;
         }
 
@@ -277,7 +294,7 @@
         }
 
         /* =========================
-           EXAMPLE PROMPTS
+           EXAMPLES
         ========================= */
 
         .examples {
@@ -288,7 +305,7 @@
         }
 
         .example {
-            background: #171719;
+            background: rgba(23, 23, 25, 0.9);
             border: 1px solid #29292d;
             border-radius: 12px;
             padding: 16px;
@@ -305,13 +322,13 @@
 
         .example-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .example-text {
             color: #85858a;
             font-size: 13px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
         /* =========================
@@ -320,7 +337,7 @@
 
         .message {
             max-width: 850px;
-            margin: 0 auto 25px;
+            margin: 0 auto 28px;
         }
 
         .message-user {
@@ -329,20 +346,28 @@
             padding: 15px 18px;
             margin-left: auto;
             max-width: 75%;
-            line-height: 1.5;
+            line-height: 1.55;
+            white-space: pre-wrap;
         }
 
         .message-ai {
             padding: 15px 5px;
             line-height: 1.7;
             color: #eeeeee;
+            white-space: pre-wrap;
         }
 
         .message-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #777777;
-            margin-bottom: 6px;
+            margin-bottom: 7px;
             font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .loading {
+            color: #999999;
+            font-style: italic;
         }
 
         /* =========================
@@ -355,6 +380,7 @@
                 transparent,
                 #0d0d0f 25%
             );
+            flex-shrink: 0;
         }
 
         .input-container {
@@ -364,7 +390,7 @@
             border: 1px solid #343438;
             border-radius: 16px;
             padding: 12px;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.25);
         }
 
         textarea {
@@ -416,11 +442,20 @@
             transform: scale(0.97);
         }
 
+        .generate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* =========================
            MOBILE
         ========================= */
 
         @media (max-width: 700px) {
+
+            body {
+                overflow: hidden;
+            }
 
             .sidebar {
                 position: fixed;
@@ -429,6 +464,7 @@
                 bottom: 0;
                 z-index: 10;
                 transform: translateX(-100%);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
             }
 
             .sidebar.open {
@@ -439,8 +475,16 @@
                 display: block;
             }
 
+            .welcome {
+                padding-top: 3vh;
+            }
+
             .welcome h1 {
                 font-size: 32px;
+            }
+
+            .welcome p {
+                font-size: 15px;
             }
 
             .examples {
@@ -450,14 +494,20 @@
             .message-user {
                 max-width: 90%;
             }
-        }
 
+            .hint {
+                display: none;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- Fantasy background -->
+    <!-- =========================
+         FANTASY BACKGROUND
+    ========================= -->
+
     <div class="fantasy-background">
 
         <div class="fantasy-emoji emoji1">⚔️</div>
@@ -468,9 +518,15 @@
         <div class="fantasy-emoji emoji6">🐉</div>
         <div class="fantasy-emoji emoji7">⚔️</div>
         <div class="fantasy-emoji emoji8">🛡️</div>
+        <div class="fantasy-emoji emoji9">🐲</div>
+        <div class="fantasy-emoji emoji10">🧝</div>
 
     </div>
 
+
+    <!-- =========================
+         APP
+    ========================= -->
 
     <div class="app">
 
@@ -535,96 +591,19 @@
             </div>
 
 
-            <!-- CHAT -->
+            <!-- =========================
+                 CHAT
+            ========================= -->
 
             <div
                 class="chat-area"
                 id="chatArea">
-
-                <div class="welcome">
-
-                    <div class="welcome-icon">
-                        🧙‍♂️
-                    </div>
-
-                    <h1>
-                        What do you want to create?
-                    </h1>
-
-                    <p>
-                        Tell DM-AI about your campaign idea and we'll build it with you.
-                    </p>
-
-
-                    <div class="examples">
-
-                        <div
-                            class="example"
-                            onclick="useExample(this)">
-
-                            <div class="example-title">
-                                🐉 Epic Fantasy
-                            </div>
-
-                            <div class="example-text">
-                                Create an epic fantasy campaign involving an ancient dragon returning after 1,000 years.
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="example"
-                            onclick="useExample(this)">
-
-                            <div class="example-title">
-                                🩸 Dark Horror
-                            </div>
-
-                            <div class="example-text">
-                                Create a dark horror campaign where an entire village mysteriously disappears.
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="example"
-                            onclick="useExample(this)">
-
-                            <div class="example-title">
-                                🏰 Political Intrigue
-                            </div>
-
-                            <div class="example-text">
-                                Create a campaign centered around rival kingdoms preparing for war.
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="example"
-                            onclick="useExample(this)">
-
-                            <div class="example-title">
-                                🗡️ Dungeon Adventure
-                            </div>
-
-                            <div class="example-text">
-                                Create a dangerous dungeon filled with traps, monsters, treasure and a powerful boss.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
             </div>
 
 
-            <!-- INPUT -->
+            <!-- =========================
+                 INPUT
+            ========================= -->
 
             <div class="input-section">
 
@@ -636,7 +615,6 @@
                         onkeydown="handleKey(event)">
                     </textarea>
 
-
                     <div class="input-bottom">
 
                         <div class="hint">
@@ -645,6 +623,7 @@
 
                         <button
                             class="generate"
+                            id="generateButton"
                             onclick="generateCampaign()">
 
                             Generate ⚔️
@@ -664,18 +643,76 @@
 
 <script>
 
-    /* =========================
-       CAMPAIGN DATA
-    ========================= */
+    /* =====================================================
+       CAMPAIGNS
+    ===================================================== */
 
     let campaigns = [];
 
     let currentCampaign = null;
 
+    let isGenerating = false;
 
-    /* =========================
+
+    /* =====================================================
+       LOAD SAVED CAMPAIGNS
+    ===================================================== */
+
+    function loadCampaigns() {
+
+        try {
+
+            const saved =
+                localStorage.getItem("dm_ai_campaigns");
+
+            if (saved) {
+
+                campaigns = JSON.parse(saved);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Could not load campaigns:",
+                error
+            );
+
+            campaigns = [];
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SAVE CAMPAIGNS
+    ===================================================== */
+
+    function saveCampaigns() {
+
+        try {
+
+            localStorage.setItem(
+                "dm_ai_campaigns",
+                JSON.stringify(campaigns)
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Could not save campaigns:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
        NEW CAMPAIGN
-    ========================= */
+    ===================================================== */
 
     function newCampaign() {
 
@@ -693,55 +730,89 @@
 
         currentCampaign = campaign;
 
+        saveCampaigns();
+
         updateSidebar();
 
         renderCampaign();
 
-        document.getElementById("prompt").focus();
+        document
+            .getElementById("prompt")
+            .focus();
+
+        closeMobileSidebar();
 
     }
 
 
-    /* =========================
-       SIDEBAR
-    ========================= */
+    /* =====================================================
+       UPDATE SIDEBAR
+    ===================================================== */
 
     function updateSidebar() {
 
-        const list = document.getElementById("chatList");
+        const list =
+            document.getElementById("chatList");
 
         list.innerHTML = "";
 
+
         campaigns.forEach(campaign => {
 
-            const item = document.createElement("div");
+            const item =
+                document.createElement("div");
 
             item.className =
                 "chat-item " +
-                (currentCampaign &&
-                 currentCampaign.id === campaign.id
-                    ? "active"
-                    : "");
+                (
+                    currentCampaign &&
+                    currentCampaign.id === campaign.id
+                        ? "active"
+                        : ""
+                );
 
-            item.innerHTML = `
 
-                <div
-                    class="chat-name"
-                    onclick="selectCampaign(${campaign.id})">
+            const name =
+                document.createElement("div");
 
-                    ⚔️ ${escapeHTML(campaign.name)}
+            name.className =
+                "chat-name";
 
-                </div>
+            name.textContent =
+                "⚔️ " + campaign.name;
 
-                <button
-                    class="delete-chat"
-                    onclick="deleteCampaign(event, ${campaign.id})">
 
-                    ✕
+            name.onclick = function () {
 
-                </button>
+                selectCampaign(campaign.id);
 
-            `;
+            };
+
+
+            const deleteButton =
+                document.createElement("button");
+
+            deleteButton.className =
+                "delete-chat";
+
+            deleteButton.textContent =
+                "✕";
+
+
+            deleteButton.onclick =
+                function(event) {
+
+                    deleteCampaign(
+                        event,
+                        campaign.id
+                    );
+
+                };
+
+
+            item.appendChild(name);
+
+            item.appendChild(deleteButton);
 
             list.appendChild(item);
 
@@ -750,32 +821,59 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        SELECT CAMPAIGN
-    ========================= */
+    ===================================================== */
 
     function selectCampaign(id) {
 
         currentCampaign =
-            campaigns.find(c => c.id === id);
+            campaigns.find(
+                campaign =>
+                    campaign.id === id
+            );
+
+
+        if (!currentCampaign) {
+            return;
+        }
+
 
         renderCampaign();
 
         updateSidebar();
 
+        closeMobileSidebar();
+
     }
 
 
-    /* =========================
+    /* =====================================================
        DELETE CAMPAIGN
-    ========================= */
+    ===================================================== */
 
     function deleteCampaign(event, id) {
 
         event.stopPropagation();
 
+
+        const confirmed =
+            confirm(
+                "Delete this campaign?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
         campaigns =
-            campaigns.filter(c => c.id !== id);
+            campaigns.filter(
+                campaign =>
+                    campaign.id !== id
+            );
+
 
         if (
             currentCampaign &&
@@ -789,6 +887,10 @@
 
         }
 
+
+        saveCampaigns();
+
+
         if (!currentCampaign) {
 
             newCampaign();
@@ -796,6 +898,7 @@
         } else {
 
             updateSidebar();
+
             renderCampaign();
 
         }
@@ -803,9 +906,9 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        RENDER CAMPAIGN
-    ========================= */
+    ===================================================== */
 
     function renderCampaign() {
 
@@ -818,7 +921,10 @@
 
         if (!currentCampaign) {
 
-            newCampaign();
+            area.innerHTML = "";
+
+            title.textContent =
+                "New Campaign";
 
             return;
 
@@ -829,7 +935,11 @@
             currentCampaign.name;
 
 
-        if (currentCampaign.messages.length === 0) {
+        /* Empty campaign */
+
+        if (
+            currentCampaign.messages.length === 0
+        ) {
 
             area.innerHTML = `
 
@@ -863,6 +973,7 @@
 
                         </div>
 
+
                         <div
                             class="example"
                             onclick="useExample(this)">
@@ -877,6 +988,7 @@
 
                         </div>
 
+
                         <div
                             class="example"
                             onclick="useExample(this)">
@@ -890,6 +1002,7 @@
                             </div>
 
                         </div>
+
 
                         <div
                             class="example"
@@ -916,66 +1029,89 @@
         }
 
 
+        /* Messages */
+
         area.innerHTML = "";
 
 
-        currentCampaign.messages.forEach(message => {
+        currentCampaign.messages.forEach(
+            message => {
 
-            const wrapper =
-                document.createElement("div");
+                const wrapper =
+                    document.createElement("div");
 
-            wrapper.className = "message";
+                wrapper.className =
+                    "message";
 
 
-            if (message.role === "user") {
+                if (message.role === "user") {
 
-                wrapper.innerHTML = `
+                    wrapper.innerHTML = `
 
-                    <div class="message-label">
-                        YOU
-                    </div>
+                        <div class="message-label">
+                            YOU
+                        </div>
 
-                    <div class="message-user">
-                        ${escapeHTML(message.content)}
-                    </div>
+                        <div class="message-user"></div>
 
-                `;
+                    `;
 
-            } else {
+                    wrapper
+                        .querySelector(".message-user")
+                        .textContent =
+                            message.content;
 
-                wrapper.innerHTML = `
+                } else {
 
-                    <div class="message-label">
-                        DM-AI
-                    </div>
+                    wrapper.innerHTML = `
 
-                    <div class="message-ai">
-                        ${escapeHTML(message.content)}
-                    </div>
+                        <div class="message-label">
+                            DM-AI
+                        </div>
 
-                `;
+                        <div class="message-ai"></div>
+
+                    `;
+
+                    wrapper
+                        .querySelector(".message-ai")
+                        .textContent =
+                            message.content;
+
+                }
+
+
+                area.appendChild(wrapper);
 
             }
+        );
 
 
-            area.appendChild(wrapper);
-
-        });
-
-
-        area.scrollTop = area.scrollHeight;
+        area.scrollTop =
+            area.scrollHeight;
 
     }
 
 
-    /* =========================
-       GENERATE
-    ========================= */
+    /* =====================================================
+       GENERATE CAMPAIGN WITH AI
+    ===================================================== */
 
-    function generateCampaign() {
+    async function generateCampaign() {
+
+        if (isGenerating) {
+            return;
+        }
+
 
         const input =
             document.getElementById("prompt");
+
+        const button =
+            document.getElementById(
+                "generateButton"
+            );
+
 
         const prompt =
             input.value.trim();
@@ -983,10 +1119,14 @@
 
         if (!prompt) {
 
+            input.focus();
+
             return;
 
         }
 
+
+        /* Create campaign if necessary */
 
         if (!currentCampaign) {
 
@@ -994,6 +1134,8 @@
 
         }
 
+
+        /* Add user message */
 
         currentCampaign.messages.push({
 
@@ -1004,7 +1146,7 @@
         });
 
 
-        /* Give campaign a name */
+        /* Give campaign a temporary name */
 
         if (
             currentCampaign.name ===
@@ -1012,37 +1154,184 @@
         ) {
 
             currentCampaign.name =
-                prompt.length > 28
-                    ? prompt.substring(0, 28) + "..."
-                    : prompt;
+                createCampaignName(prompt);
 
         }
 
 
-        /* Temporary AI response */
+        /* Clear input */
+
+        input.value = "";
+
+
+        /* Save */
+
+        saveCampaigns();
+
+
+        /* Render user message */
+
+        updateSidebar();
+
+        renderCampaign();
+
+
+        /* Loading state */
+
+        isGenerating = true;
+
+        button.disabled = true;
+
+        button.textContent =
+            "Creating... ⚔️";
+
 
         currentCampaign.messages.push({
 
             role: "ai",
 
             content:
-                "⚔️ I'm ready to build this campaign. Once the AI is connected, I'll turn your idea into a complete D&D adventure with a story, NPCs, locations, quests, encounters, villains, and more."
+                "🧙 DM-AI is building your campaign..."
 
         });
 
 
-        input.value = "";
-
-        updateSidebar();
-
         renderCampaign();
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/generate",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            prompt: prompt
+                        })
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            /* Remove loading message */
+
+            currentCampaign.messages.pop();
+
+
+            /* Handle error */
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    "The AI request failed."
+                );
+
+            }
+
+
+            /* Add AI response */
+
+            currentCampaign.messages.push({
+
+                role: "ai",
+
+                content:
+                    data.result ||
+                    "I wasn't able to generate a response."
+
+            });
+
+
+            saveCampaigns();
+
+            renderCampaign();
+
+            updateSidebar();
+
+
+        } catch (error) {
+
+            console.error(
+                "DM-AI error:",
+                error
+            );
+
+
+            /* Remove loading */
+
+            currentCampaign.messages.pop();
+
+
+            currentCampaign.messages.push({
+
+                role: "ai",
+
+                content:
+                    "⚠️ Something went wrong.\n\n" +
+                    error.message
+
+            });
+
+
+            saveCampaigns();
+
+            renderCampaign();
+
+        }
+
+
+        /* Restore button */
+
+        isGenerating = false;
+
+        button.disabled = false;
+
+        button.textContent =
+            "Generate ⚔️";
 
     }
 
 
-    /* =========================
-       EXAMPLE BUTTON
-    ========================= */
+    /* =====================================================
+       CREATE CAMPAIGN NAME
+    ===================================================== */
+
+    function createCampaignName(prompt) {
+
+        let name =
+            prompt
+                .replace(/\s+/g, " ")
+                .trim();
+
+
+        if (name.length > 30) {
+
+            name =
+                name.substring(0, 30) +
+                "...";
+
+        }
+
+
+        return name;
+
+    }
+
+
+    /* =====================================================
+       EXAMPLE PROMPTS
+    ===================================================== */
 
     function useExample(element) {
 
@@ -1051,17 +1340,23 @@
                 ".example-text"
             ).textContent;
 
-        document.getElementById("prompt").value =
-            text;
 
-        document.getElementById("prompt").focus();
+        const input =
+            document.getElementById(
+                "prompt"
+            );
+
+
+        input.value = text;
+
+        input.focus();
 
     }
 
 
-    /* =========================
+    /* =====================================================
        ENTER KEY
-    ========================= */
+    ===================================================== */
 
     function handleKey(event) {
 
@@ -1079,9 +1374,9 @@
     }
 
 
-    /* =========================
+    /* =====================================================
        MOBILE SIDEBAR
-    ========================= */
+    ===================================================== */
 
     function toggleSidebar() {
 
@@ -1092,27 +1387,62 @@
     }
 
 
-    /* =========================
-       SECURITY HELPER
-    ========================= */
+    function closeMobileSidebar() {
 
-    function escapeHTML(text) {
-
-        const div =
-            document.createElement("div");
-
-        div.textContent = text;
-
-        return div.innerHTML;
+        document
+            .getElementById("sidebar")
+            .classList.remove("open");
 
     }
 
 
-    /* =========================
-       START APP
-    ========================= */
+    /* =====================================================
+       AUTO RESIZE TEXTAREA
+    ===================================================== */
 
-    newCampaign();
+    const promptBox =
+        document.getElementById("prompt");
+
+
+    promptBox.addEventListener(
+        "input",
+        function() {
+
+            this.style.height =
+                "auto";
+
+            this.style.height =
+                Math.min(
+                    this.scrollHeight,
+                    180
+                ) + "px";
+
+        }
+    );
+
+
+    /* =====================================================
+       START APP
+    ===================================================== */
+
+    loadCampaigns();
+
+
+    if (campaigns.length > 0) {
+
+        currentCampaign =
+            campaigns[0];
+
+    } else {
+
+        newCampaign();
+
+    }
+
+
+    updateSidebar();
+
+    renderCampaign();
 
 </script>
 
