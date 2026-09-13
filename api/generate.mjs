@@ -21,49 +21,27 @@ export default async function handler(req, res) {
     if (!apiKey) {
       return res.status(500).json({
         success: false,
-        error: "GEMINI_API_KEY is missing"
+        error: "GEMINI_API_KEY is missing from Vercel"
       });
     }
 
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
-      {
-        method: "POST",
+    const systemPrompt = `
+You are DM-AI, an advanced tabletop RPG Dungeon Master.
 
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
+Create a complete playable campaign from the user's request.
 
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: `
-You are DM-AI, an RPG campaign generator.
+RETURN ONLY VALID JSON.
+NO MARKDOWN.
+NO CODE BLOCKS.
+NO TEXT OUTSIDE THE JSON.
 
-User request:
-
-${prompt}
-
-Create a complete tabletop RPG adventure.
-
-You MUST return ONLY a JSON object.
-
-Do NOT use markdown.
-Do NOT use ```json.
-Do NOT explain anything.
-Do NOT put text before or after the JSON.
-
-Use EXACTLY this structure:
+Use this exact structure:
 
 {
   "title": "Campaign title",
-  "summary": "Short summary",
-  "setting": "Setting description",
-  "tone": "Campaign tone",
+  "summary": "Campaign summary",
+  "setting": "Setting",
+  "tone": "Tone",
 
   "story": {
     "premise": "Premise",
@@ -86,148 +64,26 @@ Use EXACTLY this structure:
     "ending": "Ending"
   },
 
-  "characters": [
-    {
-      "name": "Name",
-      "race": "Race",
-      "class": "Class",
-      "level": 1,
-      "alignment": "Alignment",
-      "background": "Background",
-      "personality": "Personality",
-      "appearance": "Appearance",
-      "abilities": [
-        "Ability 1",
-        "Ability 2",
-        "Ability 3"
-      ],
-      "equipment": [
-        "Item 1",
-        "Item 2"
-      ],
-      "backstory": "Backstory"
-    }
-  ],
-
-  "npcs": [
-    {
-      "name": "Name",
-      "role": "Role",
-      "race": "Race",
-      "description": "Description",
-      "personality": "Personality",
-      "motivation": "Motivation",
-      "secret": "Secret",
-      "dialogue": "Example dialogue",
-      "location": "Location"
-    }
-  ],
-
-  "monsters": [
-    {
-      "name": "Name",
-      "type": "Type",
-      "challenge": "Challenge rating",
-      "description": "Description",
-      "abilities": [
-        "Ability 1",
-        "Ability 2"
-      ],
-      "weakness": "Weakness",
-      "tactics": "Tactics"
-    }
-  ],
-
-  "locations": [
-    {
-      "name": "Name",
-      "description": "Description",
-      "secrets": [
-        "Secret 1",
-        "Secret 2"
-      ],
-      "encounters": [
-        "Encounter 1",
-        "Encounter 2"
-      ],
-      "treasure": [
-        "Treasure 1",
-        "Treasure 2"
-      ]
-    }
-  ],
-
-  "quests": [
-    {
-      "name": "Quest name",
-      "description": "Description",
-      "objective": "Objective",
-      "steps": [
-        "Step 1",
-        "Step 2",
-        "Step 3"
-      ],
-      "reward": "Reward"
-    }
-  ],
-
-  "encounters": [
-    {
-      "name": "Encounter name",
-      "description": "Description",
-      "difficulty": "Difficulty",
-      "enemies": [
-        "Enemy 1",
-        "Enemy 2"
-      ],
-      "terrain": "Terrain",
-      "specialRules": "Special rules"
-    }
-  ],
-
-  "loot": [
-    {
-      "name": "Item",
-      "type": "Type",
-      "rarity": "Rarity",
-      "description": "Description",
-      "effect": "Effect"
-    }
-  ],
-
-  "factions": [
-    {
-      "name": "Faction",
-      "description": "Description",
-      "goal": "Goal",
-      "leader": "Leader",
-      "relationship": "Relationship"
-    }
-  ],
+  "characters": [],
+  "npcs": [],
+  "monsters": [],
+  "locations": [],
+  "quests": [],
+  "encounters": [],
+  "loot": [],
+  "factions": [],
 
   "boss": {
-    "name": "Boss name",
+    "name": "Boss",
     "description": "Description",
     "motivation": "Motivation",
-    "abilities": [
-      "Ability 1",
-      "Ability 2",
-      "Ability 3"
-    ],
-    "phases": [
-      "Phase 1",
-      "Phase 2",
-      "Phase 3"
-    ],
+    "abilities": [],
+    "phases": [],
     "arena": "Arena",
     "reward": "Reward"
   },
 
-  "dmNotes": [
-    "Note 1",
-    "Note 2",
-    "Note 3"
-  ],
+  "dmNotes": [],
 
   "choices": [
     {
@@ -249,6 +105,99 @@ Use EXACTLY this structure:
   ]
 }
 
+For characters use:
+
+{
+  "name": "Name",
+  "race": "Race",
+  "class": "Class",
+  "level": 1,
+  "alignment": "Alignment",
+  "background": "Background",
+  "personality": "Personality",
+  "appearance": "Appearance",
+  "abilities": [],
+  "equipment": [],
+  "backstory": "Backstory"
+}
+
+For NPCs use:
+
+{
+  "name": "Name",
+  "role": "Role",
+  "race": "Race",
+  "description": "Description",
+  "personality": "Personality",
+  "motivation": "Motivation",
+  "secret": "Secret",
+  "dialogue": "Example dialogue",
+  "location": "Location"
+}
+
+For monsters use:
+
+{
+  "name": "Name",
+  "type": "Type",
+  "challenge": "Challenge",
+  "description": "Description",
+  "abilities": [],
+  "weakness": "Weakness",
+  "tactics": "Tactics"
+}
+
+For locations use:
+
+{
+  "name": "Name",
+  "description": "Description",
+  "secrets": [],
+  "encounters": [],
+  "treasure": []
+}
+
+For quests use:
+
+{
+  "name": "Quest",
+  "description": "Description",
+  "objective": "Objective",
+  "steps": [],
+  "reward": "Reward"
+}
+
+For encounters use:
+
+{
+  "name": "Encounter",
+  "description": "Description",
+  "difficulty": "Difficulty",
+  "enemies": [],
+  "terrain": "Terrain",
+  "specialRules": "Rules"
+}
+
+For loot use:
+
+{
+  "name": "Item",
+  "type": "Type",
+  "rarity": "Rarity",
+  "description": "Description",
+  "effect": "Effect"
+}
+
+For factions use:
+
+{
+  "name": "Faction",
+  "description": "Description",
+  "goal": "Goal",
+  "leader": "Leader",
+  "relationship": "Relationship"
+}
+
 Requirements:
 
 - At least 3 characters.
@@ -261,23 +210,39 @@ Requirements:
 - At least 2 factions.
 - One major final boss.
 - EXACTLY 4 choices.
-- Make everything connected to the same story.
-- Choices should affect what happens next.
+- Choices must be meaningful.
+- Everything should connect to the same story.
+- Make the campaign feel like a real tabletop RPG.
 
-REMEMBER:
+USER REQUEST:
 
-Return ONLY valid JSON.
-`
+${prompt}
+`;
+
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
+        },
+
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: systemPrompt
                 }
               ]
             }
           ],
 
           generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 12000,
-
-            responseMimeType: "application/json"
+            responseMimeType: "application/json",
+            maxOutputTokens: 12000
           }
         })
       }
@@ -303,7 +268,7 @@ Return ONLY valid JSON.
     } catch {
       return res.status(500).json({
         success: false,
-        error: "Gemini API response was not valid JSON",
+        error: "Gemini API response was not JSON",
         details: raw
       });
     }
@@ -322,127 +287,84 @@ Return ONLY valid JSON.
       });
     }
 
-    /*
-      Gemini occasionally adds markdown even when told not to.
-      Clean it before parsing.
-    */
-
+    // Remove accidental markdown fences.
     answer = answer
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```$/i, "")
+      .replace(/^```json/i, "")
+      .replace(/^```/i, "")
+      .replace(/```$/i, "")
       .trim();
 
-    /*
-      Find the actual JSON object if Gemini
-      accidentally put text before/after it.
-    */
+    // Find the JSON object if Gemini added extra text.
+    const first = answer.indexOf("{");
+    const last = answer.lastIndexOf("}");
 
-    const firstBrace = answer.indexOf("{");
-    const lastBrace = answer.lastIndexOf("}");
-
-    if (
-      firstBrace !== -1 &&
-      lastBrace !== -1 &&
-      lastBrace > firstBrace
-    ) {
-      answer = answer.slice(
-        firstBrace,
-        lastBrace + 1
-      );
+    if (first !== -1 && last !== -1) {
+      answer = answer.substring(first, last + 1);
     }
 
     let campaign;
 
     try {
       campaign = JSON.parse(answer);
-    } catch (jsonError) {
-      console.error(
-        "CAMPAIGN JSON PARSE ERROR:",
-        jsonError
-      );
-
-      console.error(
-        "CAMPAIGN TEXT:",
-        answer
-      );
+    } catch (error) {
+      console.error("CAMPAIGN JSON ERROR:", error);
+      console.error("CAMPAIGN RESPONSE:", answer);
 
       return res.status(500).json({
         success: false,
-        error: "Gemini generated invalid campaign JSON",
+        error: "Campaign JSON could not be parsed",
         details: answer
       });
     }
 
-    /*
-      Make sure the important arrays always exist.
-      This prevents the website from crashing if
-      Gemini forgets one.
-    */
+    // Make sure arrays exist.
+    campaign.characters = Array.isArray(campaign.characters)
+      ? campaign.characters
+      : [];
 
-    campaign.characters =
-      Array.isArray(campaign.characters)
-        ? campaign.characters
-        : [];
+    campaign.npcs = Array.isArray(campaign.npcs)
+      ? campaign.npcs
+      : [];
 
-    campaign.npcs =
-      Array.isArray(campaign.npcs)
-        ? campaign.npcs
-        : [];
+    campaign.monsters = Array.isArray(campaign.monsters)
+      ? campaign.monsters
+      : [];
 
-    campaign.monsters =
-      Array.isArray(campaign.monsters)
-        ? campaign.monsters
-        : [];
+    campaign.locations = Array.isArray(campaign.locations)
+      ? campaign.locations
+      : [];
 
-    campaign.locations =
-      Array.isArray(campaign.locations)
-        ? campaign.locations
-        : [];
+    campaign.quests = Array.isArray(campaign.quests)
+      ? campaign.quests
+      : [];
 
-    campaign.quests =
-      Array.isArray(campaign.quests)
-        ? campaign.quests
-        : [];
+    campaign.encounters = Array.isArray(campaign.encounters)
+      ? campaign.encounters
+      : [];
 
-    campaign.encounters =
-      Array.isArray(campaign.encounters)
-        ? campaign.encounters
-        : [];
+    campaign.loot = Array.isArray(campaign.loot)
+      ? campaign.loot
+      : [];
 
-    campaign.loot =
-      Array.isArray(campaign.loot)
-        ? campaign.loot
-        : [];
+    campaign.factions = Array.isArray(campaign.factions)
+      ? campaign.factions
+      : [];
 
-    campaign.factions =
-      Array.isArray(campaign.factions)
-        ? campaign.factions
-        : [];
+    campaign.dmNotes = Array.isArray(campaign.dmNotes)
+      ? campaign.dmNotes
+      : [];
 
-    campaign.dmNotes =
-      Array.isArray(campaign.dmNotes)
-        ? campaign.dmNotes
-        : [];
+    campaign.choices = Array.isArray(campaign.choices)
+      ? campaign.choices
+      : [];
 
-    campaign.choices =
-      Array.isArray(campaign.choices)
-        ? campaign.choices
-        : [];
-
-    /*
-      Guarantee exactly four choices for
-      the frontend.
-    */
-
-    campaign.choices =
-      campaign.choices.slice(0, 4);
+    // Always give the UI four choices.
+    campaign.choices = campaign.choices.slice(0, 4);
 
     while (campaign.choices.length < 4) {
       campaign.choices.push({
         label: "Continue",
-        description:
-          "Continue the adventure and see what happens next."
+        description: "Continue the adventure."
       });
     }
 
@@ -452,11 +374,7 @@ Return ONLY valid JSON.
     });
 
   } catch (error) {
-
-    console.error(
-      "DM-AI SERVER ERROR:",
-      error
-    );
+    console.error("SERVER ERROR:", error);
 
     return res.status(500).json({
       success: false,
