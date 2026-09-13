@@ -1,14 +1,16 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
-    const { prompt } = req.body || {};
+    if (req.method !== "POST") {
+      return res.status(405).json({
+        error: "POST required"
+      });
+    }
+
+    const prompt = req.body?.prompt;
 
     if (!prompt) {
       return res.status(400).json({
-        error: "Please describe what you want to create."
+        error: "Missing prompt"
       });
     }
 
@@ -16,159 +18,18 @@ export default async function handler(req, res) {
 
     if (!apiKey) {
       return res.status(500).json({
-        error: "GEMINI_API_KEY is missing."
+        error: "GEMINI_API_KEY is missing in Vercel"
       });
     }
 
-    const systemPrompt = `
-You are DM-AI, an expert Dungeons & Dragons campaign creator.
-
-The user will describe an adventure they want.
-
-Create a COMPLETE playable D&D campaign.
-
-Return ONLY valid JSON.
-
-The JSON must have exactly these top-level properties:
-
-{
-  "title": "",
-  "summary": "",
-  "setting": "",
-  "recommended_level": "",
-  "story": "",
-  "locations": [],
-  "npcs": [],
-  "monsters": [],
-  "quests": [],
-  "encounters": [],
-  "items": [],
-  "characters": [],
-  "chapters": [],
-  "final_boss": {},
-  "dm_notes": []
-}
-
-IMPORTANT:
-
-locations:
-Create 4-8 locations.
-
-Each location must contain:
-name
-description
-secrets
-
-npcs:
-Create 5-10 NPCs.
-
-Each NPC must contain:
-name
-role
-personality
-appearance
-motivation
-secret
-dialogue
-
-monsters:
-Create 4-8 monsters.
-
-Each monster must contain:
-name
-description
-abilities
-tactics
-difficulty
-
-quests:
-Create 4-8 quests.
-
-Each quest must contain:
-name
-description
-objective
-reward
-
-encounters:
-Create 4-8 encounters.
-
-Each encounter must contain:
-name
-location
-description
-enemies
-difficulty
-dm_notes
-
-items:
-Create 4-8 items.
-
-Each item must contain:
-name
-type
-rarity
-description
-ability
-
-characters:
-Create 4 example player characters.
-
-Each character must contain:
-name
-race
-class
-background
-personality
-backstory
-ability_scores
-equipment
-
-ability_scores must contain:
-strength
-dexterity
-constitution
-intelligence
-wisdom
-charisma
-
-chapters:
-Create 4-8 campaign chapters.
-
-Each chapter must contain:
-number
-title
-summary
-objectives
-events
-
-final_boss must contain:
-name
-description
-abilities
-phases
-tactics
-difficulty
-
-dm_notes:
-Create useful tips for running the campaign.
-
-Make everything connected to the user's idea.
-
-Do NOT return Markdown.
-Do NOT return code fences.
-Do NOT explain the JSON.
-Return ONLY the JSON object.
-`;
-
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" +
-        encodeURIComponent(apiKey),
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
       {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey
         },
 
         body: JSON.stringify({
@@ -176,10 +37,74 @@ Return ONLY the JSON object.
             {
               parts: [
                 {
-                  text:
-                    systemPrompt +
-                    "\n\nUSER REQUEST:\n" +
-                    prompt
+                  text: `
+You are DM-AI, an expert Dungeons & Dragons Dungeon Master.
+
+Create a complete playable D&D campaign based on:
+
+${prompt}
+
+Return a detailed campaign including:
+
+CAMPAIGN
+- title
+- summary
+- setting
+- recommended level
+- tone
+- main story
+
+LOCATIONS
+Create several important locations.
+
+NPCS
+Create important NPCs with:
+- name
+- role
+- personality
+- motivation
+- secret
+- dialogue
+
+MONSTERS
+Create monsters with:
+- name
+- description
+- abilities
+- tactics
+- difficulty
+
+QUESTS
+Create main and side quests.
+
+ENCOUNTERS
+Create combat and non-combat encounters.
+
+ITEMS
+Create weapons, armor, magic items and treasure.
+
+CHARACTERS
+Create several example player characters with:
+- name
+- race
+- class
+- background
+- personality
+- backstory
+- ability scores
+- equipment
+
+CHAPTERS
+Break the adventure into multiple playable chapters.
+
+FINAL BOSS
+Create an epic final boss with abilities, tactics and multiple phases.
+
+DM NOTES
+Give useful advice for running the adventure.
+
+Return ONLY valid JSON.
+`
                 }
               ]
             }
@@ -195,13 +120,13 @@ Return ONLY the JSON object.
 
     const data = await response.json();
 
-    console.log("Gemini response:", JSON.stringify(data));
+    console.log("GEMINI STATUS:", response.status);
+    console.log("GEMINI RESPONSE:", JSON.stringify(data));
 
     if (!response.ok) {
       return res.status(500).json({
-        error:
-          data?.error?.message ||
-          "Gemini API request failed."
+        error: data?.error?.message || "Gemini API error",
+        geminiStatus: response.status
       });
     }
 
@@ -210,7 +135,8 @@ Return ONLY the JSON object.
 
     if (!text) {
       return res.status(500).json({
-        error: "Gemini returned an empty response."
+        error: "Gemini returned no text",
+        raw: data
       });
     }
 
@@ -219,11 +145,12 @@ Return ONLY the JSON object.
     try {
       campaign = JSON.parse(text);
     } catch (error) {
-      console.error("JSON parse error:", error);
-      console.error("Gemini text:", text);
+      console.error("JSON ERROR:", error);
+      console.error("RAW GEMINI:", text);
 
       return res.status(500).json({
-        error: "Gemini returned invalid campaign data."
+        error: "Gemini returned invalid JSON",
+        raw: text
       });
     }
 
@@ -233,10 +160,10 @@ Return ONLY the JSON object.
     });
 
   } catch (error) {
-    console.error("SERVER ERROR:", error);
+    console.error("DM-AI SERVER ERROR:", error);
 
     return res.status(500).json({
-      error: error.message || "Something went wrong."
+      error: error.message
     });
   }
 }
