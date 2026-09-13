@@ -11,18 +11,54 @@
     box-sizing: border-box;
 }
 
+:root {
+    --bg: #080611;
+    --panel: #110d1c;
+    --panel2: #171124;
+    --purple: #8b5cf6;
+    --purple2: #6d28d9;
+    --light-purple: #c4b5fd;
+    --text: #f8f7fb;
+    --muted: #9990a8;
+    --border: rgba(139,92,246,.24);
+    --danger: #ef4444;
+}
+
+html,
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100%;
+}
+
+body {
     background:
-        radial-gradient(circle at top, rgba(139,92,246,.22), transparent 35%),
-        linear-gradient(135deg, #090714, #120c20 45%, #08060d);
-    color: #fff;
-    min-height: 100vh;
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(124,58,237,.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(139,92,246,.12),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            #080611,
+            #100b19 50%,
+            #07050c
+        );
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 button,
-input,
 textarea {
     font: inherit;
 }
@@ -36,57 +72,101 @@ button {
     display: flex;
 }
 
-/* =========================
+/* =====================================================
    SIDEBAR
-========================= */
+===================================================== */
 
 .sidebar {
-    width: 270px;
-    min-height: 100vh;
-    background: rgba(10,8,18,.94);
-    border-right: 1px solid rgba(139,92,246,.3);
-    padding: 22px;
+    width: 280px;
     position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
+
+    padding: 22px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(10,7,18,.98),
+            rgba(8,6,14,.98)
+        );
+
+    border-right:
+        1px solid rgba(139,92,246,.22);
+
     overflow-y: auto;
 }
 
-.logo {
-    font-size: 27px;
-    font-weight: 900;
-    color: #c4a7ff;
-    margin-bottom: 5px;
-}
-
-.logo-sub {
-    color: #8e849d;
-    font-size: 13px;
+.brand {
     margin-bottom: 25px;
 }
 
-.new-campaign {
+.brand-title {
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #c4b5fd
+        );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-sub {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.new-btn {
     width: 100%;
-    border: 1px solid #8b5cf6;
-    background: linear-gradient(135deg,#7c3aed,#5b21b6);
-    color: white;
-    padding: 13px;
+
+    border: 1px solid rgba(167,139,250,.4);
+
     border-radius: 12px;
+
+    padding: 13px 15px;
+
+    color: white;
+
     font-weight: 800;
-    margin-bottom: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8b5cf6,
+            #5b21b6
+        );
+
+    box-shadow:
+        0 8px 25px rgba(124,58,237,.2);
+
+    transition: .2s;
 }
 
-.new-campaign:hover {
-    filter: brightness(1.15);
+.new-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
 }
 
-.sidebar-title {
-    color: #80758e;
+.sidebar-label {
+    margin-top: 28px;
+    margin-bottom: 10px;
+
+    color: #766d82;
+
+    font-size: 10px;
+    font-weight: 800;
+
     text-transform: uppercase;
-    font-size: 11px;
+
     letter-spacing: 1.5px;
-    margin: 20px 0 10px;
 }
 
 .campaign-list {
@@ -96,358 +176,795 @@ button {
 }
 
 .campaign-item {
-    padding: 11px 12px;
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 7px 7px 7px 11px;
+
+    border:
+        1px solid transparent;
+
     border-radius: 10px;
-    background: rgba(255,255,255,.025);
-    border: 1px solid transparent;
-    color: #cfc7d8;
-    cursor: pointer;
-    font-size: 13px;
+
+    color: #c8c1d1;
+
+    background: rgba(255,255,255,.018);
+
+    transition: .18s;
 }
 
-.campaign-item:hover,
+.campaign-item:hover {
+    background: rgba(139,92,246,.09);
+    border-color: rgba(139,92,246,.18);
+}
+
 .campaign-item.active {
-    background: rgba(139,92,246,.15);
-    border-color: rgba(139,92,246,.4);
+    background: rgba(139,92,246,.14);
+    border-color: rgba(139,92,246,.32);
     color: white;
 }
 
-/* =========================
+.campaign-name {
+    flex: 1;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.delete-campaign {
+    width: 26px;
+    height: 26px;
+
+    flex: 0 0 26px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #625a6b;
+
+    font-size: 19px;
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: .15s;
+}
+
+.delete-campaign:hover {
+    color: #f87171;
+    background: rgba(239,68,68,.13);
+}
+
+/* =====================================================
    MAIN
-========================= */
+===================================================== */
 
 .main {
-    margin-left: 270px;
-    width: calc(100% - 270px);
+    margin-left: 280px;
+
+    width: calc(100% - 280px);
+
     min-height: 100vh;
+
     padding: 28px;
 }
 
 .topbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    justify-content: space-between;
+
+    margin-bottom: 22px;
 }
 
-.title-area h1 {
+.title-wrap h1 {
     margin: 0;
+
     font-size: 30px;
+
+    letter-spacing: -.8px;
 }
 
-.title-area p {
-    color: #958aa2;
-    margin: 7px 0 0;
+.title-wrap p {
+    margin: 6px 0 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
 }
 
-/* =========================
-   CHAT
-========================= */
+/* =====================================================
+   WORKSPACE
+===================================================== */
 
 .workspace {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 330px;
-    gap: 22px;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        320px;
+
+    gap: 20px;
 }
 
-.panel {
-    background: rgba(17,13,28,.86);
-    border: 1px solid rgba(139,92,246,.25);
+.panel,
+.tool-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,15,32,.92),
+            rgba(13,10,22,.94)
+        );
+
+    border:
+        1px solid var(--border);
+
+    box-shadow:
+        0 18px 55px rgba(0,0,0,.25);
+}
+
+/* =====================================================
+   CHAT
+===================================================== */
+
+.chat-panel {
+    min-height: 610px;
+
     border-radius: 18px;
+
+    display: flex;
+
+    flex-direction: column;
+
     overflow: hidden;
-    box-shadow: 0 15px 50px rgba(0,0,0,.25);
 }
 
 .panel-header {
-    padding: 17px 20px;
-    border-bottom: 1px solid rgba(255,255,255,.07);
+    padding: 16px 19px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.06);
+
     font-weight: 800;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.chat {
-    min-height: 620px;
-    display: flex;
-    flex-direction: column;
+.online-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #a78bfa;
+
+    box-shadow:
+        0 0 12px rgba(167,139,250,.8);
 }
 
 .messages {
     flex: 1;
-    padding: 22px;
+
+    min-height: 400px;
+
+    max-height: 620px;
+
     overflow-y: auto;
-    max-height: 650px;
+
+    padding: 22px;
 }
 
 .message {
-    margin-bottom: 18px;
+    display: flex;
+
+    margin-bottom: 16px;
 }
 
 .message.user {
-    display: flex;
     justify-content: flex-end;
+}
+
+.message.ai {
+    justify-content: flex-start;
 }
 
 .message-bubble {
-    max-width: 85%;
-    padding: 13px 16px;
+    max-width: 82%;
+
+    padding: 12px 15px;
+
     border-radius: 14px;
+
     line-height: 1.55;
+
     white-space: pre-wrap;
+
+    font-size: 14px;
 }
 
 .message.user .message-bubble {
-    background: linear-gradient(135deg,#7c3aed,#5b21b6);
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #5b21b6
+        );
+
+    border-bottom-right-radius: 4px;
 }
 
 .message.ai .message-bubble {
-    background: rgba(255,255,255,.055);
-    border: 1px solid rgba(255,255,255,.07);
+    background: rgba(255,255,255,.045);
+
+    border:
+        1px solid rgba(255,255,255,.07);
+
+    border-bottom-left-radius: 4px;
+
+    color: #d6d0dc;
+}
+
+.typing {
+    color: #b9a7df !important;
 }
 
 .composer {
-    padding: 15px;
-    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 14px;
+
+    border-top:
+        1px solid rgba(255,255,255,.06);
+
+    background:
+        rgba(5,4,9,.22);
 }
 
-.composer textarea {
+.prompt {
     width: 100%;
-    min-height: 85px;
+
+    min-height: 88px;
+
     resize: vertical;
-    background: #0b0911;
-    color: white;
-    border: 1px solid rgba(139,92,246,.3);
-    border-radius: 12px;
-    padding: 13px;
+
+    padding: 13px 14px;
+
     outline: none;
+
+    color: white;
+
+    background: #0a0810;
+
+    border:
+        1px solid rgba(139,92,246,.24);
+
+    border-radius: 12px;
+
+    line-height: 1.45;
 }
 
-.composer textarea:focus {
-    border-color: #8b5cf6;
+.prompt::placeholder {
+    color: #655c70;
 }
 
-.composer-row {
+.prompt:focus {
+    border-color: rgba(139,92,246,.7);
+
+    box-shadow:
+        0 0 0 3px rgba(139,92,246,.08);
+}
+
+.composer-bottom {
     display: flex;
-    justify-content: flex-end;
+
+    align-items: center;
+
+    justify-content: space-between;
+
     margin-top: 10px;
 }
 
-.generate {
-    background: linear-gradient(135deg,#8b5cf6,#6d28d9);
-    border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 11px;
-    font-weight: 800;
+.hint {
+    color: #62596c;
+
+    font-size: 11px;
 }
 
-.generate:disabled {
+.generate-btn {
+    border: none;
+
+    border-radius: 11px;
+
+    padding: 12px 19px;
+
+    color: white;
+
+    font-weight: 900;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8b5cf6,
+            #6d28d9
+        );
+
+    box-shadow:
+        0 8px 20px rgba(109,40,217,.2);
+
+    transition: .18s;
+}
+
+.generate-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+
+    filter: brightness(1.1);
+}
+
+.generate-btn:disabled {
     opacity: .55;
+
     cursor: not-allowed;
 }
 
-/* =========================
-   RIGHT PANEL
-========================= */
+/* =====================================================
+   RIGHT SIDE
+===================================================== */
 
-.side-panel {
+.right-column {
     display: flex;
+
     flex-direction: column;
-    gap: 18px;
+
+    gap: 17px;
 }
 
-.card {
-    background: rgba(17,13,28,.86);
-    border: 1px solid rgba(139,92,246,.25);
-    border-radius: 18px;
+.tool-card {
+    border-radius: 17px;
+
     padding: 18px;
 }
 
-.card h3 {
-    margin-top: 0;
-    color: #d5c2ff;
+.tool-card h3 {
+    margin: 0 0 14px;
+
+    font-size: 15px;
+
+    color: #d8cced;
 }
 
 .stat {
     display: flex;
+
+    align-items: center;
+
     justify-content: space-between;
+
     padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,.05);
-    color: #bdb3c8;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.045);
+
+    color: #968da1;
+
+    font-size: 13px;
 }
 
 .stat:last-child {
     border-bottom: none;
 }
 
-/* =========================
-   CAMPAIGN OUTPUT
-========================= */
+.stat strong {
+    color: #ddd5e7;
+}
 
-.campaign-output {
-    margin-top: 22px;
+.quick-choice {
+    width: 100%;
+
+    text-align: left;
+
+    padding: 12px;
+
+    margin-top: 8px;
+
+    border-radius: 11px;
+
+    color: white;
+
+    background: rgba(139,92,246,.07);
+
+    border:
+        1px solid rgba(139,92,246,.2);
+
+    transition: .18s;
+}
+
+.quick-choice:hover {
+    background: rgba(139,92,246,.14);
+
+    border-color:
+        rgba(139,92,246,.4);
+}
+
+.quick-choice strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #d6c4ff;
+}
+
+.quick-choice span {
+    color: #81788b;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+/* =====================================================
+   OUTPUT
+===================================================== */
+
+.output {
+    margin-top: 20px;
 }
 
 .hero {
-    background:
-        linear-gradient(135deg,rgba(124,58,237,.25),rgba(17,13,28,.95)),
-        radial-gradient(circle at top right,rgba(139,92,246,.25),transparent 40%);
-    border: 1px solid rgba(139,92,246,.35);
-    border-radius: 18px;
     padding: 25px;
+
+    border-radius: 18px;
+
     margin-bottom: 18px;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(139,92,246,.25),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(109,40,217,.18),
+            rgba(17,13,28,.95)
+        );
+
+    border:
+        1px solid rgba(139,92,246,.32);
 }
 
 .hero h2 {
     margin: 0 0 10px;
+
     font-size: 29px;
 }
 
 .hero p {
-    color: #c0b5c9;
+    margin: 7px 0;
+
+    color: #bcb2c7;
+
     line-height: 1.6;
 }
 
 .section {
-    background: rgba(17,13,28,.8);
-    border: 1px solid rgba(255,255,255,.07);
-    border-radius: 16px;
     padding: 20px;
-    margin-bottom: 18px;
+
+    margin-bottom: 17px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(16,12,25,.82);
+
+    border:
+        1px solid rgba(255,255,255,.065);
 }
 
 .section h2 {
-    margin-top: 0;
-    color: #d4c1ff;
+    margin: 0 0 17px;
+
+    color: #d7c6f7;
+
+    font-size: 20px;
 }
 
 .section h3 {
-    color: #b99cff;
+    color: #bba3ed;
+
+    margin-bottom: 7px;
+}
+
+.section p {
+    color: #aaa1b3;
+
+    line-height: 1.55;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-    gap: 13px;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(245px, 1fr)
+        );
+
+    gap: 12px;
 }
 
 .info-card {
-    background: rgba(255,255,255,.035);
-    border: 1px solid rgba(255,255,255,.07);
-    border-radius: 13px;
     padding: 15px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(255,255,255,.028);
+
+    border:
+        1px solid rgba(255,255,255,.065);
 }
 
 .info-card h3 {
     margin-top: 0;
-    color: #d8c9ff;
+
+    color: #d4c5eb;
 }
 
 .info-card p {
-    color: #bdb4c5;
+    font-size: 13px;
+
+    color: #a69daa;
+
     line-height: 1.5;
 }
 
 .tag {
     display: inline-block;
-    background: rgba(139,92,246,.16);
-    border: 1px solid rgba(139,92,246,.3);
-    color: #cbb5ff;
+
     padding: 4px 8px;
+
+    margin: 2px;
+
     border-radius: 999px;
-    font-size: 11px;
-    margin: 3px;
+
+    color: #cbb8ef;
+
+    background:
+        rgba(139,92,246,.1);
+
+    border:
+        1px solid rgba(139,92,246,.23);
+
+    font-size: 10px;
 }
 
-/* =========================
+/* =====================================================
    CHOICES
-========================= */
+===================================================== */
 
 .choices {
     display: grid;
-    grid-template-columns: repeat(2,1fr);
-    gap: 12px;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 11px;
 }
 
-.choice {
-    background: rgba(139,92,246,.09);
-    border: 1px solid rgba(139,92,246,.3);
-    border-radius: 13px;
-    padding: 15px;
-    color: white;
+.choice-btn {
     text-align: left;
-    transition: .2s;
+
+    min-height: 100px;
+
+    padding: 15px;
+
+    border-radius: 13px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(139,92,246,.1),
+            rgba(139,92,246,.035)
+        );
+
+    border:
+        1px solid rgba(139,92,246,.25);
+
+    transition: .18s;
 }
 
-.choice:hover {
+.choice-btn:hover {
     transform: translateY(-2px);
-    background: rgba(139,92,246,.18);
-    border-color: #8b5cf6;
+
+    background:
+        rgba(139,92,246,.16);
+
+    border-color:
+        rgba(139,92,246,.55);
 }
 
-.choice strong {
+.choice-btn strong {
     display: block;
-    color: #d6c2ff;
-    margin-bottom: 6px;
+
+    color: #d9c8ff;
+
+    margin-bottom: 7px;
 }
 
-.choice span {
-    color: #aaa0b2;
-    font-size: 13px;
-    line-height: 1.4;
+.choice-btn span {
+    color: #9e95a8;
+
+    font-size: 12px;
+
+    line-height: 1.45;
 }
 
-/* =========================
+/* =====================================================
    EMPTY
-========================= */
+===================================================== */
 
 .empty {
-    padding: 55px 20px;
+    min-height: 400px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
     text-align: center;
-    color: #84798e;
+
+    color: #746b7e;
 }
 
 .empty-icon {
-    font-size: 55px;
-    margin-bottom: 12px;
+    font-size: 50px;
+
+    margin-bottom: 10px;
+
+    opacity: .75;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+.empty h2 {
+    margin: 0 0 7px;
 
-@media(max-width:1000px) {
+    color: #aaa0b5;
+
+    font-size: 20px;
+}
+
+.empty p {
+    margin: 0;
+
+    font-size: 13px;
+}
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #bda7e8;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid rgba(255,255,255,.12);
+
+    border-top-color:
+        #a78bfa;
+
+    animation:
+        spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1050px) {
+
     .sidebar {
-        width: 220px;
+        width: 230px;
     }
 
     .main {
-        margin-left: 220px;
-        width: calc(100% - 220px);
+        margin-left: 230px;
+
+        width:
+            calc(100% - 230px);
     }
 
     .workspace {
         grid-template-columns: 1fr;
     }
+
+    .right-column {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2,1fr);
+    }
 }
 
-@media(max-width:700px) {
-    .sidebar {
-        position: relative;
-        width: 100%;
-        min-height: auto;
-    }
-
-    .main {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
+@media(max-width:720px) {
 
     .app {
         display: block;
     }
 
+    .sidebar {
+        position: relative;
+
+        width: 100%;
+
+        min-height: auto;
+
+        max-height: 280px;
+    }
+
+    .main {
+        margin-left: 0;
+
+        width: 100%;
+
+        padding: 15px;
+    }
+
+    .right-column {
+        display: flex;
+    }
+
     .choices {
         grid-template-columns: 1fr;
+    }
+
+    .composer-bottom {
+        align-items: flex-end;
+
+        gap: 10px;
+    }
+
+    .hint {
+        display: none;
     }
 }
 </style>
@@ -457,177 +974,267 @@ button {
 
 <div class="app">
 
-    <!-- SIDEBAR -->
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="logo">
-            ⚔️ DM-AI 🛡️
+    <div class="brand">
+
+        <div class="brand-title">
+            ⚔️ DM-AI
         </div>
 
-        <div class="logo-sub">
+        <div class="brand-sub">
             Your AI Dungeon Master
         </div>
 
-        <button class="new-campaign" onclick="newCampaign()">
-            + New Campaign
-        </button>
+    </div>
 
-        <div class="sidebar-title">
-            Campaigns
+
+    <button
+        class="new-btn"
+        onclick="newCampaign()"
+    >
+        ＋ New Campaign
+    </button>
+
+
+    <div class="sidebar-label">
+        Your Campaigns
+    </div>
+
+
+    <div
+        id="campaignList"
+        class="campaign-list"
+    ></div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div class="title-wrap">
+
+            <h1 id="campaignTitle">
+                DM-AI
+            </h1>
+
+            <p>
+                Build worlds. Create legends. Roll the dice.
+            </p>
+
         </div>
 
-        <div id="campaignList" class="campaign-list"></div>
-
-    </aside>
+    </div>
 
 
-    <!-- MAIN -->
+    <div class="workspace">
 
-    <main class="main">
 
-        <div class="topbar">
+        <!-- =================================================
+             CHAT
+        ================================================== -->
 
-            <div class="title-area">
-                <h1 id="campaignTitle">
-                    DM-AI
-                </h1>
+        <section class="panel chat-panel">
 
-                <p>
-                    Build worlds. Create legends. Roll the dice.
-                </p>
+            <div class="panel-header">
+
+                <span>
+                    🧙 DM Chat
+                </span>
+
+                <span
+                    class="online-dot"
+                    title="DM-AI ready"
+                ></span>
+
             </div>
 
-        </div>
+
+            <div
+                id="messages"
+                class="messages"
+            ></div>
 
 
-        <div class="workspace">
+            <div class="composer">
 
-            <!-- CHAT -->
-
-            <section class="panel chat">
-
-                <div class="panel-header">
-                    🧙 DM Chat
-                </div>
-
-                <div
-                    id="messages"
-                    class="messages"
-                ></div>
-
-                <div class="composer">
-
-                    <textarea
-                        id="prompt"
-                        placeholder="Describe your adventure..."
-                    ></textarea>
-
-                    <div class="composer-row">
-
-                        <button
-                            id="generateButton"
-                            class="generate"
-                            onclick="generateCampaign()"
-                        >
-                            Generate ⚔️
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </section>
+                <textarea
+                    id="prompt"
+                    class="prompt"
+                    placeholder="Describe the adventure you want DM-AI to create..."
+                ></textarea>
 
 
-            <!-- RIGHT SIDE -->
+                <div class="composer-bottom">
 
-            <aside class="side-panel">
+                    <span class="hint">
+                        Press Enter to generate • Shift + Enter for a new line
+                    </span>
 
-                <div class="card">
-
-                    <h3>⚔️ Campaign Tools</h3>
-
-                    <div class="stat">
-                        <span>Characters</span>
-                        <strong id="characterCount">0</strong>
-                    </div>
-
-                    <div class="stat">
-                        <span>NPCs</span>
-                        <strong id="npcCount">0</strong>
-                    </div>
-
-                    <div class="stat">
-                        <span>Monsters</span>
-                        <strong id="monsterCount">0</strong>
-                    </div>
-
-                    <div class="stat">
-                        <span>Locations</span>
-                        <strong id="locationCount">0</strong>
-                    </div>
-
-                    <div class="stat">
-                        <span>Quests</span>
-                        <strong id="questCount">0</strong>
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <h3>🛡️ Quick Start</h3>
-
-                    <p style="color:#aaa0b2;line-height:1.5;">
-                        Tell DM-AI what kind of adventure
-                        you want and it will build the world
-                        around your idea.
-                    </p>
 
                     <button
-                        class="choice"
-                        style="width:100%;margin-top:8px;"
-                        onclick="useExample('Create a dark fantasy campaign where an entire village mysteriously disappears.')"
+                        id="generateButton"
+                        class="generate-btn"
+                        onclick="generateCampaign()"
                     >
-                        <strong>🌑 Dark Fantasy</strong>
-                        <span>Start a mysterious adventure.</span>
-                    </button>
-
-                    <button
-                        class="choice"
-                        style="width:100%;margin-top:8px;"
-                        onclick="useExample('Create an epic fantasy campaign involving an ancient dragon and a forgotten kingdom.')"
-                    >
-                        <strong>🐉 Dragon Quest</strong>
-                        <span>Build an epic fantasy campaign.</span>
+                        Generate ⚔️
                     </button>
 
                 </div>
 
-            </aside>
+            </div>
 
-        </div>
+        </section>
 
 
-        <!-- OUTPUT -->
+        <!-- =================================================
+             RIGHT COLUMN
+        ================================================== -->
 
-        <div
-            id="campaignOutput"
-            class="campaign-output"
-        ></div>
+        <aside class="right-column">
 
-    </main>
+
+            <div class="tool-card">
+
+                <h3>
+                    ⚔️ Campaign Overview
+                </h3>
+
+
+                <div class="stat">
+                    <span>Characters</span>
+                    <strong id="characterCount">0</strong>
+                </div>
+
+
+                <div class="stat">
+                    <span>NPCs</span>
+                    <strong id="npcCount">0</strong>
+                </div>
+
+
+                <div class="stat">
+                    <span>Monsters</span>
+                    <strong id="monsterCount">0</strong>
+                </div>
+
+
+                <div class="stat">
+                    <span>Locations</span>
+                    <strong id="locationCount">0</strong>
+                </div>
+
+
+                <div class="stat">
+                    <span>Quests</span>
+                    <strong id="questCount">0</strong>
+                </div>
+
+
+                <div class="stat">
+                    <span>Encounters</span>
+                    <strong id="encounterCount">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="tool-card">
+
+                <h3>
+                    ✨ Quick Start
+                </h3>
+
+
+                <button
+                    class="quick-choice"
+                    onclick="useExample(
+                        'Create a dark fantasy campaign where an entire village mysteriously disappears overnight.'
+                    )"
+                >
+
+                    <strong>
+                        🌑 Dark Fantasy
+                    </strong>
+
+                    <span>
+                        Mystery, danger, curses and dark magic.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="quick-choice"
+                    onclick="useExample(
+                        'Create an epic fantasy campaign involving an ancient dragon, a forgotten kingdom, and a legendary artifact.'
+                    )"
+                >
+
+                    <strong>
+                        🐉 Dragon Quest
+                    </strong>
+
+                    <span>
+                        Dragons, kingdoms, heroes and legendary treasure.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="quick-choice"
+                    onclick="useExample(
+                        'Create a horror campaign where the players investigate a haunted town that changes every night.'
+                    )"
+                >
+
+                    <strong>
+                        👻 Horror
+                    </strong>
+
+                    <span>
+                        A terrifying mystery with supernatural threats.
+                    </span>
+
+                </button>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- =====================================================
+         CAMPAIGN OUTPUT
+    ====================================================== -->
+
+    <div
+        id="campaignOutput"
+        class="output"
+    ></div>
+
+</main>
 
 </div>
 
 
 <script>
 
-/* =========================================
+/* =========================================================
    STATE
-========================================= */
+========================================================= */
 
 let campaigns = [];
 
@@ -636,23 +1243,38 @@ let currentCampaign = null;
 let isGenerating = false;
 
 
-/* =========================================
+/* =========================================================
    STORAGE
-========================================= */
+========================================================= */
 
 function loadCampaigns() {
 
     try {
 
         const saved =
-            localStorage.getItem("dm_ai_campaigns");
+            localStorage.getItem(
+                "dm_ai_campaigns"
+            );
 
-        campaigns =
-            saved
-                ? JSON.parse(saved)
-                : [];
+        if (saved) {
 
-    } catch {
+            const parsed =
+                JSON.parse(saved);
+
+            if (Array.isArray(parsed)) {
+
+                campaigns = parsed;
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not load campaigns:",
+            error
+        );
 
         campaigns = [];
 
@@ -663,73 +1285,151 @@ function loadCampaigns() {
 
 function saveCampaigns() {
 
-    localStorage.setItem(
-        "dm_ai_campaigns",
-        JSON.stringify(campaigns)
-    );
+    try {
+
+        localStorage.setItem(
+            "dm_ai_campaigns",
+            JSON.stringify(campaigns)
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Could not save campaigns:",
+            error
+        );
+
+    }
 
 }
 
 
-/* =========================================
-   CAMPAIGN NAME
-========================================= */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-function createCampaignName(prompt) {
+function safeArray(value) {
+
+    return Array.isArray(value)
+        ? value
+        : [];
+
+}
+
+
+function safeText(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+    if (
+        typeof value === "object"
+    ) {
+
+        try {
+
+            return JSON.stringify(value);
+
+        } catch {
+
+            return "";
+
+        }
+
+    }
+
+    return String(value);
+
+}
+
+
+function escapeHtml(value) {
+
+    return safeText(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   CAMPAIGN NAME
+========================================================= */
+
+function makeCampaignName(prompt) {
 
     const words =
         prompt
-            .replace(/[^\w\s]/g,"")
+            .replace(/[^\w\s]/g, "")
+            .trim()
             .split(/\s+/)
             .filter(Boolean)
-            .slice(0,5);
+            .slice(0, 5);
 
     if (!words.length) {
+
         return "New Campaign";
+
     }
 
     return words
-        .map(w =>
-            w.charAt(0).toUpperCase() +
-            w.slice(1)
+        .map(word =>
+            word.charAt(0).toUpperCase() +
+            word.slice(1)
         )
         .join(" ");
 
 }
 
 
-/* =========================================
+/* =========================================================
    NEW CAMPAIGN
-========================================= */
+========================================================= */
 
-function createFirstCampaign() {
+function createCampaign() {
 
-    currentCampaign = {
+    const campaign = {
 
-        id: Date.now(),
+        id:
+            Date.now() +
+            Math.floor(
+                Math.random() * 10000
+            ),
 
-        name: "New Campaign",
+        name:
+            "New Campaign",
 
         messages: []
 
     };
 
-    campaigns.unshift(
-        currentCampaign
-    );
+    campaigns.unshift(campaign);
+
+    currentCampaign = campaign;
 
     saveCampaigns();
 
     updateSidebar();
+
+    renderCampaign();
+
+    return campaign;
 
 }
 
 
 function newCampaign() {
 
-    createFirstCampaign();
-
-    renderCampaign();
+    createCampaign();
 
     document
         .getElementById("prompt")
@@ -738,9 +1438,76 @@ function newCampaign() {
 }
 
 
-/* =========================================
+/* =========================================================
+   DELETE CAMPAIGN
+========================================================= */
+
+function deleteCampaign(id) {
+
+    const campaign =
+        campaigns.find(
+            c => c.id === id
+        );
+
+    if (!campaign) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        window.confirm(
+            `Delete "${campaign.name || "this campaign"}"?`
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    campaigns =
+        campaigns.filter(
+            c => c.id !== id
+        );
+
+
+    if (
+        currentCampaign &&
+        currentCampaign.id === id
+    ) {
+
+        if (campaigns.length > 0) {
+
+            currentCampaign =
+                campaigns[0];
+
+        } else {
+
+            createCampaign();
+
+            return;
+
+        }
+
+    }
+
+
+    saveCampaigns();
+
+    updateSidebar();
+
+    renderCampaign();
+
+}
+
+
+/* =========================================================
    SIDEBAR
-========================================= */
+========================================================= */
 
 function updateSidebar() {
 
@@ -751,121 +1518,192 @@ function updateSidebar() {
 
     list.innerHTML = "";
 
-    campaigns.forEach(campaign => {
 
-        const item =
+    if (!campaigns.length) {
+
+        const empty =
             document.createElement("div");
 
-        item.className =
-            "campaign-item" +
-            (
+        empty.style.color = "#62596b";
+
+        empty.style.fontSize = "12px";
+
+        empty.textContent =
+            "No campaigns yet.";
+
+        list.appendChild(empty);
+
+        return;
+
+    }
+
+
+    campaigns.forEach(
+        campaign => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "campaign-item";
+
+
+            if (
                 currentCampaign &&
                 campaign.id ===
                 currentCampaign.id
-                    ? " active"
-                    : ""
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+            name.className =
+                "campaign-name";
+
+            name.textContent =
+                campaign.name ||
+                "New Campaign";
+
+
+            name.onclick = () => {
+
+                currentCampaign =
+                    campaign;
+
+                updateSidebar();
+
+                renderCampaign();
+
+            };
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+            deleteButton.className =
+                "delete-campaign";
+
+            deleteButton.textContent =
+                "×";
+
+            deleteButton.title =
+                "Delete campaign";
+
+
+            deleteButton.onclick =
+                event => {
+
+                    event.stopPropagation();
+
+                    deleteCampaign(
+                        campaign.id
+                    );
+
+                };
+
+
+            item.appendChild(name);
+
+            item.appendChild(
+                deleteButton
             );
 
-        item.textContent =
-            campaign.name ||
-            "New Campaign";
+            list.appendChild(item);
 
-        item.onclick = () => {
-
-            currentCampaign =
-                campaign;
-
-            renderCampaign();
-
-            updateSidebar();
-
-        };
-
-        list.appendChild(item);
-
-    });
+        }
+    );
 
 }
 
 
-/* =========================================
-   EXAMPLE
-========================================= */
+/* =========================================================
+   QUICK START
+========================================================= */
 
 function useExample(text) {
 
-    document
-        .getElementById("prompt")
-        .value = text;
+    const prompt =
+        document.getElementById(
+            "prompt"
+        );
 
-    document
-        .getElementById("prompt")
-        .focus();
+    prompt.value = text;
 
-}
-
-
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeHtml(value) {
-
-    if (value === null ||
-        value === undefined) {
-        return "";
-    }
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    prompt.focus();
 
 }
 
 
-/* =========================================
-   ARRAY HELPERS
-========================================= */
+/* =========================================================
+   STATS
+========================================================= */
 
-function array(value) {
+function updateStats(campaign) {
 
-    return Array.isArray(value)
-        ? value
-        : [];
+    document.getElementById(
+        "characterCount"
+    ).textContent =
+        safeArray(
+            campaign?.characters
+        ).length;
+
+
+    document.getElementById(
+        "npcCount"
+    ).textContent =
+        safeArray(
+            campaign?.npcs
+        ).length;
+
+
+    document.getElementById(
+        "monsterCount"
+    ).textContent =
+        safeArray(
+            campaign?.monsters
+        ).length;
+
+
+    document.getElementById(
+        "locationCount"
+    ).textContent =
+        safeArray(
+            campaign?.locations
+        ).length;
+
+
+    document.getElementById(
+        "questCount"
+    ).textContent =
+        safeArray(
+            campaign?.quests
+        ).length;
+
+
+    document.getElementById(
+        "encounterCount"
+    ).textContent =
+        safeArray(
+            campaign?.encounters
+        ).length;
 
 }
 
 
-function text(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
-    }
-
-    if (typeof value === "object") {
-
-        try {
-            return JSON.stringify(value);
-        } catch {
-            return "";
-        }
-
-    }
-
-    return String(value);
-
-}
-
-
-/* =========================================
-   RENDER MESSAGES
-========================================= */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
 function renderMessages() {
 
@@ -876,15 +1714,25 @@ function renderMessages() {
 
     container.innerHTML = "";
 
+
     if (
         !currentCampaign ||
+        !Array.isArray(
+            currentCampaign.messages
+        ) ||
         !currentCampaign.messages.length
     ) {
 
         container.innerHTML = `
             <div class="empty">
-                <div class="empty-icon">⚔️</div>
-                <h2>Ready, Dungeon Master?</h2>
+                <div class="empty-icon">
+                    ⚔️
+                </div>
+
+                <h2>
+                    Ready, Dungeon Master?
+                </h2>
+
                 <p>
                     Describe the adventure you want to create.
                 </p>
@@ -895,36 +1743,58 @@ function renderMessages() {
 
     }
 
+
     currentCampaign.messages.forEach(
         message => {
 
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             row.className =
                 "message " +
-                message.role;
+                (
+                    message.role === "user"
+                        ? "user"
+                        : "ai"
+                );
+
 
             const bubble =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             bubble.className =
                 "message-bubble";
 
+
             if (
-                message.role === "ai" &&
-                message.data
+                message.loading
             ) {
 
-                bubble.innerHTML =
-                    "⚔️ Campaign generated below!";
+                bubble.classList.add(
+                    "typing"
+                );
+
+                bubble.innerHTML = `
+                    <div class="loading-box">
+                        <div class="spinner"></div>
+                        <span>
+                            DM-AI is building your adventure...
+                        </span>
+                    </div>
+                `;
 
             } else {
 
                 bubble.textContent =
-                    message.content || "";
+                    message.content ||
+                    "";
 
             }
+
 
             row.appendChild(bubble);
 
@@ -933,23 +1803,27 @@ function renderMessages() {
         }
     );
 
+
     container.scrollTop =
         container.scrollHeight;
 
 }
 
 
-/* =========================================
+/* =========================================================
    RENDER CAMPAIGN
-========================================= */
+========================================================= */
 
 function renderCampaign() {
 
     if (!currentCampaign) {
 
-        createFirstCampaign();
+        createCampaign();
+
+        return;
 
     }
+
 
     document.getElementById(
         "campaignTitle"
@@ -957,21 +1831,30 @@ function renderCampaign() {
         currentCampaign.name ||
         "DM-AI";
 
+
     renderMessages();
+
 
     const output =
         document.getElementById(
             "campaignOutput"
         );
 
-    const aiMessages =
-        currentCampaign.messages
-            .filter(m =>
-                m.role === "ai" &&
-                m.data
-            );
 
-    if (!aiMessages.length) {
+    const generated =
+        Array.isArray(
+            currentCampaign.messages
+        )
+            ? currentCampaign.messages
+                .filter(
+                    message =>
+                        message.role === "ai" &&
+                        message.data
+                )
+            : [];
+
+
+    if (!generated.length) {
 
         output.innerHTML = "";
 
@@ -981,10 +1864,12 @@ function renderCampaign() {
 
     }
 
+
     const campaign =
-        aiMessages[
-            aiMessages.length - 1
+        generated[
+            generated.length - 1
         ].data;
+
 
     renderCampaignData(
         campaign
@@ -993,52 +1878,39 @@ function renderCampaign() {
 }
 
 
-/* =========================================
-   STATS
-========================================= */
+/* =========================================================
+   ARRAY CARD RENDERER
+========================================================= */
 
-function updateStats(campaign) {
+function renderList(items) {
 
-    document.getElementById(
-        "characterCount"
-    ).textContent =
-        array(campaign?.characters).length;
-
-    document.getElementById(
-        "npcCount"
-    ).textContent =
-        array(campaign?.npcs).length;
-
-    document.getElementById(
-        "monsterCount"
-    ).textContent =
-        array(campaign?.monsters).length;
-
-    document.getElementById(
-        "locationCount"
-    ).textContent =
-        array(campaign?.locations).length;
-
-    document.getElementById(
-        "questCount"
-    ).textContent =
-        array(campaign?.quests).length;
+    return safeArray(items)
+        .map(
+            item =>
+                "• " +
+                escapeHtml(
+                    safeText(item)
+                )
+        )
+        .join("<br>");
 
 }
 
 
-/* =========================================
+/* =========================================================
    CAMPAIGN DATA
-========================================= */
+========================================================= */
 
 function renderCampaignData(c) {
 
     updateStats(c);
 
+
     const output =
         document.getElementById(
             "campaignOutput"
         );
+
 
     let html = "";
 
@@ -1050,7 +1922,7 @@ function renderCampaignData(c) {
 
             <h2>
                 ${escapeHtml(
-                    text(c.title) ||
+                    c.title ||
                     currentCampaign.name ||
                     "Untitled Campaign"
                 )}
@@ -1058,21 +1930,21 @@ function renderCampaignData(c) {
 
             <p>
                 ${escapeHtml(
-                    text(c.summary)
+                    c.summary
                 )}
             </p>
 
             <p>
                 <strong>Setting:</strong>
                 ${escapeHtml(
-                    text(c.setting)
+                    c.setting
                 )}
             </p>
 
             <p>
                 <strong>Tone:</strong>
                 ${escapeHtml(
-                    text(c.tone)
+                    c.tone
                 )}
             </p>
 
@@ -1087,58 +1959,73 @@ function renderCampaignData(c) {
         html += `
             <div class="section">
 
-                <h2>📖 Story</h2>
+                <h2>
+                    📖 Story
+                </h2>
 
-                <h3>Premise</h3>
+                <h3>
+                    Premise
+                </h3>
 
                 <p>
                     ${escapeHtml(
-                        text(c.story.premise)
+                        c.story.premise
                     )}
                 </p>
 
-                <h3>Opening</h3>
+                <h3>
+                    Opening
+                </h3>
 
                 <p>
                     ${escapeHtml(
-                        text(c.story.opening)
+                        c.story.opening
                     )}
                 </p>
         `;
 
-        array(c.story.acts)
-            .forEach(act => {
+
+        safeArray(
+            c.story.acts
+        ).forEach(
+            act => {
 
                 html += `
                     <h3>
                         ${escapeHtml(
-                            text(act.title)
+                            act.title
                         )}
                     </h3>
 
                     <p>
                         ${escapeHtml(
-                            text(act.description)
+                            act.description
                         )}
                     </p>
                 `;
 
-            });
+            }
+        );
+
 
         html += `
-                <h3>Climax</h3>
+                <h3>
+                    Climax
+                </h3>
 
                 <p>
                     ${escapeHtml(
-                        text(c.story.climax)
+                        c.story.climax
                     )}
                 </p>
 
-                <h3>Ending</h3>
+                <h3>
+                    Ending
+                </h3>
 
                 <p>
                     ${escapeHtml(
-                        text(c.story.ending)
+                        c.story.ending
                     )}
                 </p>
 
@@ -1150,100 +2037,117 @@ function renderCampaignData(c) {
 
     /* CHARACTERS */
 
-    if (array(c.characters).length) {
+    if (
+        safeArray(
+            c.characters
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🧙 Character Sheets</h2>
+                <h2>
+                    🧙 Character Sheets
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.characters.forEach(ch => {
 
-            html += `
-                <div class="info-card">
+        c.characters.forEach(
+            character => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(ch.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(ch.race)
-                        )}
-                    </span>
+                        <h3>
+                            ${escapeHtml(
+                                character.name
+                            )}
+                        </h3>
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(ch.class)
-                        )}
-                    </span>
+                        <span class="tag">
+                            ${escapeHtml(
+                                character.race
+                            )}
+                        </span>
 
-                    <span class="tag">
-                        Level ${escapeHtml(
-                            text(ch.level)
-                        )}
-                    </span>
+                        <span class="tag">
+                            ${escapeHtml(
+                                character.class
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Background:</strong>
-                        ${escapeHtml(
-                            text(ch.background)
-                        )}
-                    </p>
+                        <span class="tag">
+                            Level ${escapeHtml(
+                                character.level
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Personality:</strong>
-                        ${escapeHtml(
-                            text(ch.personality)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Background:
+                            </strong><br>
+                            ${escapeHtml(
+                                character.background
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Appearance:</strong>
-                        ${escapeHtml(
-                            text(ch.appearance)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Personality:
+                            </strong><br>
+                            ${escapeHtml(
+                                character.personality
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Abilities:</strong><br>
-                        ${array(ch.abilities)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            <strong>
+                                Appearance:
+                            </strong><br>
+                            ${escapeHtml(
+                                character.appearance
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Equipment:</strong><br>
-                        ${array(ch.equipment)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            <strong>
+                                Abilities:
+                            </strong><br>
+                            ${renderList(
+                                character.abilities
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Backstory:</strong>
-                        ${escapeHtml(
-                            text(ch.backstory)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Equipment:
+                            </strong><br>
+                            ${renderList(
+                                character.equipment
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Backstory:
+                            </strong><br>
+                            ${escapeHtml(
+                                character.backstory
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1252,74 +2156,108 @@ function renderCampaignData(c) {
 
     /* NPCS */
 
-    if (array(c.npcs).length) {
+    if (
+        safeArray(
+            c.npcs
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🧑‍🤝‍🧑 NPCs</h2>
+                <h2>
+                    🧑‍🤝‍🧑 NPCs
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.npcs.forEach(npc => {
 
-            html += `
-                <div class="info-card">
+        c.npcs.forEach(
+            npc => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(npc.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(npc.role)
-                        )}
-                    </span>
+                        <h3>
+                            ${escapeHtml(
+                                npc.name
+                            )}
+                        </h3>
 
-                    <p>
-                        ${escapeHtml(
-                            text(npc.description)
-                        )}
-                    </p>
+                        <span class="tag">
+                            ${escapeHtml(
+                                npc.role
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Personality:</strong>
-                        ${escapeHtml(
-                            text(npc.personality)
-                        )}
-                    </p>
+                        <span class="tag">
+                            ${escapeHtml(
+                                npc.race
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Motivation:</strong>
-                        ${escapeHtml(
-                            text(npc.motivation)
-                        )}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                npc.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Secret:</strong>
-                        ${escapeHtml(
-                            text(npc.secret)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Personality:
+                            </strong><br>
+                            ${escapeHtml(
+                                npc.personality
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Location:</strong>
-                        ${escapeHtml(
-                            text(npc.location)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Motivation:
+                            </strong><br>
+                            ${escapeHtml(
+                                npc.motivation
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Secret:
+                            </strong><br>
+                            ${escapeHtml(
+                                npc.secret
+                            )}
+                        </p>
 
-        });
+                        <p>
+                            <strong>
+                                Dialogue:
+                            </strong><br>
+                            ${escapeHtml(
+                                npc.dialogue
+                            )}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Location:
+                            </strong>
+                            ${escapeHtml(
+                                npc.location
+                            )}
+                        </p>
+
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1328,76 +2266,90 @@ function renderCampaignData(c) {
 
     /* MONSTERS */
 
-    if (array(c.monsters).length) {
+    if (
+        safeArray(
+            c.monsters
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>👹 Monsters</h2>
+                <h2>
+                    👹 Monsters
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.monsters.forEach(monster => {
 
-            html += `
-                <div class="info-card">
+        c.monsters.forEach(
+            monster => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(monster.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(monster.type)
-                        )}
-                    </span>
+                        <h3>
+                            ${escapeHtml(
+                                monster.name
+                            )}
+                        </h3>
 
-                    <span class="tag">
-                        CR ${escapeHtml(
-                            text(monster.challenge)
-                        )}
-                    </span>
+                        <span class="tag">
+                            ${escapeHtml(
+                                monster.type
+                            )}
+                        </span>
 
-                    <p>
-                        ${escapeHtml(
-                            text(monster.description)
-                        )}
-                    </p>
+                        <span class="tag">
+                            CR ${escapeHtml(
+                                monster.challenge
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Abilities:</strong><br>
-                        ${array(monster.abilities)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                monster.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Weakness:</strong>
-                        ${escapeHtml(
-                            text(monster.weakness)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Abilities:
+                            </strong><br>
+                            ${renderList(
+                                monster.abilities
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Tactics:</strong>
-                        ${escapeHtml(
-                            text(monster.tactics)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Weakness:
+                            </strong><br>
+                            ${escapeHtml(
+                                monster.weakness
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Tactics:
+                            </strong><br>
+                            ${escapeHtml(
+                                monster.tactics
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1406,70 +2358,78 @@ function renderCampaignData(c) {
 
     /* LOCATIONS */
 
-    if (array(c.locations).length) {
+    if (
+        safeArray(
+            c.locations
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🗺️ Locations</h2>
+                <h2>
+                    🗺️ Locations
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.locations.forEach(location => {
 
-            html += `
-                <div class="info-card">
+        c.locations.forEach(
+            location => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(location.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <p>
-                        ${escapeHtml(
-                            text(location.description)
-                        )}
-                    </p>
+                        <h3>
+                            ${escapeHtml(
+                                location.name
+                            )}
+                        </h3>
 
-                    <p>
-                        <strong>Secrets:</strong><br>
-                        ${array(location.secrets)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                location.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Encounters:</strong><br>
-                        ${array(location.encounters)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            <strong>
+                                Secrets:
+                            </strong><br>
+                            ${renderList(
+                                location.secrets
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Treasure:</strong><br>
-                        ${array(location.treasure)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            <strong>
+                                Encounters:
+                            </strong><br>
+                            ${renderList(
+                                location.encounters
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Treasure:
+                            </strong><br>
+                            ${renderList(
+                                location.treasure
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1478,64 +2438,78 @@ function renderCampaignData(c) {
 
     /* QUESTS */
 
-    if (array(c.quests).length) {
+    if (
+        safeArray(
+            c.quests
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🎯 Quests</h2>
+                <h2>
+                    🎯 Quests
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.quests.forEach(q => {
 
-            html += `
-                <div class="info-card">
+        c.quests.forEach(
+            quest => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(q.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <p>
-                        ${escapeHtml(
-                            text(q.description)
-                        )}
-                    </p>
+                        <h3>
+                            ${escapeHtml(
+                                quest.name
+                            )}
+                        </h3>
 
-                    <p>
-                        <strong>Objective:</strong>
-                        ${escapeHtml(
-                            text(q.objective)
-                        )}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                quest.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Steps:</strong><br>
-                        ${array(q.steps)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            <strong>
+                                Objective:
+                            </strong><br>
+                            ${escapeHtml(
+                                quest.objective
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Reward:</strong>
-                        ${escapeHtml(
-                            text(q.reward)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Steps:
+                            </strong><br>
+                            ${renderList(
+                                quest.steps
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Reward:
+                            </strong><br>
+                            ${escapeHtml(
+                                quest.reward
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1544,70 +2518,84 @@ function renderCampaignData(c) {
 
     /* ENCOUNTERS */
 
-    if (array(c.encounters).length) {
+    if (
+        safeArray(
+            c.encounters
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>⚔️ Encounters</h2>
+                <h2>
+                    ⚔️ Encounters
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.encounters.forEach(e => {
 
-            html += `
-                <div class="info-card">
+        c.encounters.forEach(
+            encounter => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(e.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(e.difficulty)
-                        )}
-                    </span>
+                        <h3>
+                            ${escapeHtml(
+                                encounter.name
+                            )}
+                        </h3>
 
-                    <p>
-                        ${escapeHtml(
-                            text(e.description)
-                        )}
-                    </p>
+                        <span class="tag">
+                            ${escapeHtml(
+                                encounter.difficulty
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Enemies:</strong><br>
-                        ${array(e.enemies)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                encounter.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Terrain:</strong>
-                        ${escapeHtml(
-                            text(e.terrain)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Enemies:
+                            </strong><br>
+                            ${renderList(
+                                encounter.enemies
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Special Rules:</strong>
-                        ${escapeHtml(
-                            text(e.specialRules)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Terrain:
+                            </strong><br>
+                            ${escapeHtml(
+                                encounter.terrain
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Special Rules:
+                            </strong><br>
+                            ${escapeHtml(
+                                encounter.specialRules
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1616,53 +2604,72 @@ function renderCampaignData(c) {
 
     /* LOOT */
 
-    if (array(c.loot).length) {
+    if (
+        safeArray(
+            c.loot
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🎒 Loot & Items</h2>
+                <h2>
+                    🎒 Loot & Items
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.loot.forEach(item => {
 
-            html += `
-                <div class="info-card">
+        c.loot.forEach(
+            item => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(item.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <span class="tag">
-                        ${escapeHtml(
-                            text(item.rarity)
-                        )}
-                    </span>
+                        <h3>
+                            ${escapeHtml(
+                                item.name
+                            )}
+                        </h3>
 
-                    <p>
-                        ${escapeHtml(
-                            text(item.description)
-                        )}
-                    </p>
+                        <span class="tag">
+                            ${escapeHtml(
+                                item.type
+                            )}
+                        </span>
 
-                    <p>
-                        <strong>Effect:</strong>
-                        ${escapeHtml(
-                            text(item.effect)
-                        )}
-                    </p>
+                        <span class="tag">
+                            ${escapeHtml(
+                                item.rarity
+                            )}
+                        </span>
 
-                </div>
-            `;
+                        <p>
+                            ${escapeHtml(
+                                item.description
+                            )}
+                        </p>
 
-        });
+                        <p>
+                            <strong>
+                                Effect:
+                            </strong><br>
+                            ${escapeHtml(
+                                item.effect
+                            )}
+                        </p>
+
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1671,61 +2678,78 @@ function renderCampaignData(c) {
 
     /* FACTIONS */
 
-    if (array(c.factions).length) {
+    if (
+        safeArray(
+            c.factions
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>🏰 Factions</h2>
+                <h2>
+                    🏰 Factions
+                </h2>
 
                 <div class="grid">
         `;
 
-        c.factions.forEach(f => {
 
-            html += `
-                <div class="info-card">
+        c.factions.forEach(
+            faction => {
 
-                    <h3>
-                        ${escapeHtml(
-                            text(f.name)
-                        )}
-                    </h3>
+                html += `
+                    <div class="info-card">
 
-                    <p>
-                        ${escapeHtml(
-                            text(f.description)
-                        )}
-                    </p>
+                        <h3>
+                            ${escapeHtml(
+                                faction.name
+                            )}
+                        </h3>
 
-                    <p>
-                        <strong>Goal:</strong>
-                        ${escapeHtml(
-                            text(f.goal)
-                        )}
-                    </p>
+                        <p>
+                            ${escapeHtml(
+                                faction.description
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Leader:</strong>
-                        ${escapeHtml(
-                            text(f.leader)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Goal:
+                            </strong><br>
+                            ${escapeHtml(
+                                faction.goal
+                            )}
+                        </p>
 
-                    <p>
-                        <strong>Relationship:</strong>
-                        ${escapeHtml(
-                            text(f.relationship)
-                        )}
-                    </p>
+                        <p>
+                            <strong>
+                                Leader:
+                            </strong><br>
+                            ${escapeHtml(
+                                faction.leader
+                            )}
+                        </p>
 
-                </div>
-            `;
+                        <p>
+                            <strong>
+                                Relationship:
+                            </strong><br>
+                            ${escapeHtml(
+                                faction.relationship
+                            )}
+                        </p>
 
-        });
+                    </div>
+                `;
+
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
@@ -1739,60 +2763,66 @@ function renderCampaignData(c) {
         html += `
             <div class="section">
 
-                <h2>👑 Final Boss</h2>
+                <h2>
+                    👑 Final Boss
+                </h2>
 
                 <div class="info-card">
 
                     <h3>
                         ${escapeHtml(
-                            text(c.boss.name)
+                            c.boss.name
                         )}
                     </h3>
 
                     <p>
                         ${escapeHtml(
-                            text(c.boss.description)
+                            c.boss.description
                         )}
                     </p>
 
                     <p>
-                        <strong>Motivation:</strong>
+                        <strong>
+                            Motivation:
+                        </strong><br>
                         ${escapeHtml(
-                            text(c.boss.motivation)
+                            c.boss.motivation
                         )}
                     </p>
 
                     <p>
-                        <strong>Abilities:</strong><br>
-                        ${array(c.boss.abilities)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
-
-                    <p>
-                        <strong>Phases:</strong><br>
-                        ${array(c.boss.phases)
-                            .map(x =>
-                                "• " +
-                                escapeHtml(text(x))
-                            )
-                            .join("<br>")}
-                    </p>
-
-                    <p>
-                        <strong>Arena:</strong>
-                        ${escapeHtml(
-                            text(c.boss.arena)
+                        <strong>
+                            Abilities:
+                        </strong><br>
+                        ${renderList(
+                            c.boss.abilities
                         )}
                     </p>
 
                     <p>
-                        <strong>Reward:</strong>
+                        <strong>
+                            Phases:
+                        </strong><br>
+                        ${renderList(
+                            c.boss.phases
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Arena:
+                        </strong><br>
                         ${escapeHtml(
-                            text(c.boss.reward)
+                            c.boss.arena
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Reward:
+                        </strong><br>
+                        ${escapeHtml(
+                            c.boss.reward
                         )}
                     </p>
 
@@ -1806,20 +2836,29 @@ function renderCampaignData(c) {
 
     /* DM NOTES */
 
-    if (array(c.dmNotes).length) {
+    if (
+        safeArray(
+            c.dmNotes
+        ).length
+    ) {
 
         html += `
             <div class="section">
 
-                <h2>📜 DM Notes</h2>
+                <h2>
+                    📜 DM Notes
+                </h2>
 
                 <div class="info-card">
 
-                    ${array(c.dmNotes)
-                        .map(x =>
-                            `<p>• ${escapeHtml(text(x))}</p>`
-                        )
-                        .join("")}
+                    ${safeArray(
+                        c.dmNotes
+                    )
+                    .map(
+                        note =>
+                            `<p>• ${escapeHtml(note)}</p>`
+                    )
+                    .join("")}
 
                 </div>
 
@@ -1831,152 +2870,186 @@ function renderCampaignData(c) {
 
     /* FOUR CHOICES */
 
-    if (array(c.choices).length) {
+    const choices =
+        safeArray(
+            c.choices
+        ).slice(0,4);
+
+
+    if (choices.length) {
 
         html += `
             <div class="section">
 
-                <h2>🧭 What happens next?</h2>
+                <h2>
+                    🧭 What happens next?
+                </h2>
 
                 <div class="choices">
         `;
 
-        c.choices
-            .slice(0,4)
-            .forEach((choice,index) => {
+
+        choices.forEach(
+            (choice,index) => {
 
                 html += `
                     <button
-                        class="choice"
+                        class="choice-btn"
                         onclick="chooseAction(${index})"
                     >
 
                         <strong>
                             ${escapeHtml(
-                                text(choice.label)
+                                choice.label ||
+                                `Choice ${index + 1}`
                             )}
                         </strong>
 
                         <span>
                             ${escapeHtml(
-                                text(choice.description)
+                                choice.description
                             )}
                         </span>
 
                     </button>
                 `;
 
-            });
+            }
+        );
+
 
         html += `
                 </div>
+
             </div>
         `;
 
     }
 
 
-    output.innerHTML = html;
+    output.innerHTML =
+        html;
 
 }
 
 
-/* =========================================
-   CHOICE
-========================================= */
+/* =========================================================
+   CHOICE ACTION
+========================================================= */
 
 async function chooseAction(index) {
 
-    const aiMessages =
+    if (
+        !currentCampaign ||
+        isGenerating
+    ) {
+
+        return;
+
+    }
+
+
+    const generated =
         currentCampaign.messages
-            .filter(m =>
-                m.role === "ai" &&
-                m.data
+            .filter(
+                message =>
+                    message.role === "ai" &&
+                    message.data
             );
 
-    if (!aiMessages.length) {
+
+    if (!generated.length) {
+
         return;
+
     }
+
 
     const campaign =
-        aiMessages[
-            aiMessages.length - 1
+        generated[
+            generated.length - 1
         ].data;
 
-    const choices =
-        array(campaign.choices);
 
-    if (!choices[index]) {
-        return;
-    }
+    const choices =
+        safeArray(
+            campaign.choices
+        );
+
 
     const choice =
         choices[index];
 
-    const choiceText =
-        `I choose: ${choice.label}\n\n${choice.description}`;
+
+    if (!choice) {
+
+        return;
+
+    }
+
+
+    const prompt =
+        `I choose "${safeText(choice.label)}".
+
+${safeText(choice.description)}
+
+Continue the adventure from this decision. Keep the existing characters, NPCs, locations, factions, quests, monsters, and story consistent. Update the story based on this choice and give me four new meaningful choices.`;
+
 
     document.getElementById(
         "prompt"
-    ).value = choiceText;
+    ).value = prompt;
+
 
     await generateCampaign();
 
 }
 
 
-/* =========================================
+/* =========================================================
    GENERATE
-========================================= */
+========================================================= */
 
 async function generateCampaign() {
 
     if (isGenerating) {
+
         return;
+
     }
+
 
     const input =
         document.getElementById(
             "prompt"
         );
 
+
     const button =
         document.getElementById(
             "generateButton"
         );
 
+
     const prompt =
         input.value.trim();
 
+
     if (!prompt) {
+
         input.focus();
+
         return;
+
     }
+
 
     if (!currentCampaign) {
-        createFirstCampaign();
-    }
 
-    currentCampaign.messages.push({
-        role: "user",
-        content: prompt
-    });
-
-    if (
-        currentCampaign.name ===
-        "New Campaign"
-    ) {
-
-        currentCampaign.name =
-            createCampaignName(prompt);
+        createCampaign();
 
     }
 
-    input.value = "";
-
-    saveCampaigns();
-    updateSidebar();
-    renderCampaign();
 
     isGenerating = true;
 
@@ -1985,23 +3058,80 @@ async function generateCampaign() {
     button.textContent =
         "⚔️ Building...";
 
+
+    /* USER MESSAGE */
+
+    currentCampaign.messages =
+        Array.isArray(
+            currentCampaign.messages
+        )
+            ? currentCampaign.messages
+            : [];
+
+
     currentCampaign.messages.push({
+
+        role: "user",
+
+        content: prompt
+
+    });
+
+
+    /* NAME */
+
+    if (
+        !currentCampaign.name ||
+        currentCampaign.name ===
+        "New Campaign"
+    ) {
+
+        currentCampaign.name =
+            makeCampaignName(
+                prompt
+            );
+
+    }
+
+
+    input.value = "";
+
+
+    /* LOADING */
+
+    currentCampaign.messages.push({
+
         role: "ai",
+
+        loading: true,
+
         content:
             "DM-AI is building your adventure..."
+
     });
+
+
+    saveCampaigns();
+
+    updateSidebar();
 
     renderCampaign();
 
-    const controller =
-        new AbortController();
-
-    const timeout =
-        setTimeout(() => {
-            controller.abort();
-        }, 90000);
 
     try {
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                () => {
+                    controller.abort();
+                },
+                90000
+            );
+
 
         const response =
             await fetch(
@@ -2011,6 +3141,9 @@ async function generateCampaign() {
 
                     headers: {
                         "Content-Type":
+                            "application/json",
+
+                        "Accept":
                             "application/json"
                     },
 
@@ -2024,17 +3157,22 @@ async function generateCampaign() {
                 }
             );
 
+
         clearTimeout(timeout);
+
 
         const raw =
             await response.text();
 
+
         console.log(
-            "DM-AI RESPONSE:",
+            "DM-AI SERVER RESPONSE:",
             raw
         );
 
+
         let data;
+
 
         try {
 
@@ -2044,70 +3182,147 @@ async function generateCampaign() {
         } catch {
 
             throw new Error(
-                "The server returned invalid JSON."
+                "The server did not return valid JSON. Check the Vercel function logs."
             );
 
         }
+
 
         if (!response.ok) {
 
             throw new Error(
-                data.error ||
                 data.details ||
-                "Gemini API error."
+                data.error ||
+                `Server returned ${response.status}`
             );
 
         }
 
+
+        if (
+            data.success !== true
+        ) {
+
+            throw new Error(
+                data.details ||
+                data.error ||
+                "DM-AI failed to generate the campaign."
+            );
+
+        }
+
+
         let campaign =
-            data.result ||
-            data.campaign;
+            data.result;
+
 
         if (
             typeof campaign ===
             "string"
         ) {
 
-            try {
-
-                campaign =
-                    JSON.parse(
-                        campaign
-                    );
-
-            } catch {
-
-                throw new Error(
-                    "Gemini returned text instead of campaign JSON."
+            campaign =
+                JSON.parse(
+                    campaign
                 );
-
-            }
 
         }
 
+
         if (
             !campaign ||
-            typeof campaign !== "object"
+            typeof campaign !==
+            "object"
         ) {
 
             throw new Error(
-                "DM-AI returned no campaign."
+                "DM-AI returned an empty campaign."
             );
 
         }
 
-        currentCampaign.messages.pop();
+
+        /*
+         * REMOVE LOADING MESSAGE
+         */
+
+        currentCampaign.messages =
+            currentCampaign.messages
+                .filter(
+                    message =>
+                        !message.loading
+                );
+
+
+        /*
+         * ADD GENERATED CAMPAIGN
+         */
 
         currentCampaign.messages.push({
 
             role: "ai",
 
             content:
-                "Campaign generated.",
+                "Campaign generated successfully.",
 
-            data: campaign
+            data:
+                campaign
 
         });
+
+
+        /*
+         * Make sure four choices exist.
+         */
+
+        if (
+            !Array.isArray(
+                campaign.choices
+            )
+        ) {
+
+            campaign.choices = [];
+
+        }
+
+
+        while (
+            campaign.choices.length < 4
+        ) {
+
+            campaign.choices.push({
+
+                label:
+                    "Continue the adventure",
+
+                description:
+                    "Continue the story and see what happens next."
+
+            });
+
+        }
+
+
+        campaign.choices =
+            campaign.choices.slice(
+                0,
+                4
+            );
+
+
+        /*
+         * Update campaign title
+         */
+
+        if (
+            campaign.title
+        ) {
+
+            currentCampaign.name =
+                campaign.title;
+
+        }
+
 
         saveCampaigns();
 
@@ -2115,42 +3330,56 @@ async function generateCampaign() {
 
         renderCampaign();
 
-    }
 
-    catch (error) {
-
-        clearTimeout(timeout);
+    } catch (error) {
 
         console.error(
-            "DM-AI ERROR:",
+            "DM-AI GENERATION ERROR:",
             error
         );
 
-        currentCampaign.messages.pop();
 
-        let message =
+        /*
+         * Remove loading message.
+         */
+
+        currentCampaign.messages =
+            currentCampaign.messages
+                .filter(
+                    message =>
+                        !message.loading
+                );
+
+
+        let errorMessage =
             error.message ||
-            "Unknown error.";
+            "Unknown error";
+
 
         if (
             error.name ===
             "AbortError"
         ) {
 
-            message =
-                "Gemini timed out. Check your Vercel deployment and API key.";
+            errorMessage =
+                "The AI request timed out after 90 seconds.";
 
         }
+
 
         currentCampaign.messages.push({
 
             role: "ai",
 
             content:
-                "⚠️ DM-AI ERROR\n\n" +
-                message
+                `⚠️ DM-AI ERROR
+
+${errorMessage}
+
+Check your Vercel deployment and the GEMINI_API_KEY environment variable.`
 
         });
+
 
         saveCampaigns();
 
@@ -2158,23 +3387,20 @@ async function generateCampaign() {
 
     }
 
-    finally {
 
-        isGenerating = false;
+    isGenerating = false;
 
-        button.disabled = false;
+    button.disabled = false;
 
-        button.textContent =
-            "Generate ⚔️";
-
-    }
+    button.textContent =
+        "Generate ⚔️";
 
 }
 
 
-/* =========================================
+/* =========================================================
    ENTER KEY
-========================================= */
+========================================================= */
 
 document
     .getElementById("prompt")
@@ -2197,11 +3423,12 @@ document
     );
 
 
-/* =========================================
-   START
-========================================= */
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
 loadCampaigns();
+
 
 if (campaigns.length) {
 
@@ -2210,9 +3437,10 @@ if (campaigns.length) {
 
 } else {
 
-    createFirstCampaign();
+    createCampaign();
 
 }
+
 
 updateSidebar();
 
